@@ -1,23 +1,21 @@
 package tatami.android.task;
 
 import tatami.android.Client;
-import tatami.android.LoginActivity;
 import android.os.AsyncTask;
 
 /**
+ * <p>
+ * </p>
  * 
  * @author pariviere
- *
  */
 public class DoLogin extends AsyncTask<String, Void, Boolean> {
-	
-	private final LoginActivity loginActivity;
-	
-	public DoLogin(LoginActivity loginActivity) {
-		this.loginActivity = loginActivity;
+	private final LoginListener loginListener;
+
+	public DoLogin(LoginListener loginListener) {
+		this.loginListener = loginListener;
 	}
-	
-	
+
 	@Override
 	protected Boolean doInBackground(String... params) {
 		try {
@@ -34,9 +32,9 @@ public class DoLogin extends AsyncTask<String, Void, Boolean> {
 	@Override
 	protected void onPostExecute(Boolean authenticated) {
 		if (authenticated) {
-			loginActivity.startTimeline();
+			loginListener.onLoginSucceed();
 		} else {
-			loginActivity.retryLogin();
+			loginListener.onLoginFailed();
 		}
 	}
 }

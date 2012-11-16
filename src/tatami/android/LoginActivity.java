@@ -71,7 +71,7 @@ public class LoginActivity extends Activity {
 			this.progressDialog = ProgressDialog.show(this, null,
 					getString(R.string.authentication_in_progress), true);
 
-			new DoLogin(this).execute(login, passwd);
+//			new DoLogin(this).execute(login, passwd);
 		}
 	}
 
