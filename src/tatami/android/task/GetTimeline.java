@@ -2,13 +2,13 @@ package tatami.android.task;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.json.JSONArray;
-
-import tatami.android.Client;
+import tatami.android.Constants;
 import tatami.android.TimelineActivity;
-import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 /**
@@ -37,8 +37,36 @@ public class GetTimeline
 
 		try {
 
-			List<tatami.android.model.Status> statuses = Client.getInstance()
-					.getTimeline(params);
+			Uri.Builder fullUri = new Uri.Builder();
+			fullUri.scheme("content");
+			fullUri.authority(Constants.AUTHORITY);
+			fullUri.appendPath("status");
+
+			Cursor cursor = timeline.getContentResolver().query(
+					fullUri.build(), null, null, null, null);
+
+			List<tatami.android.model.Status> statuses = new ArrayList<tatami.android.model.Status>();
+
+			while (cursor.moveToNext()) {
+				String statusId = cursor.getString(cursor
+						.getColumnIndex("statusId"));
+				String username = cursor.getString(cursor
+						.getColumnIndex("username"));
+				String content = cursor.getString(cursor
+						.getColumnIndex("content"));
+				String gravatar = cursor.getString(cursor
+						.getColumnIndex("gravatar"));
+
+				tatami.android.model.Status status = new tatami.android.model.Status();
+				status.setStatusId(statusId);
+				status.setContent(content);
+				status.setUsername(username);
+				status.setStatusDate(new Date());
+				status.setGravatar(gravatar);
+				
+				statuses.add(status);
+
+			}
 
 			return statuses;
 		} catch (Exception ex) {

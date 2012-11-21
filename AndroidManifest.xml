@@ -50,7 +50,7 @@
 
         <provider
             android:name=".content.StatusProvider"
-            android:authorities="tatami.android.status"
+            android:authorities="tatami.android.provider"
             android:label="Status"
             android:syncable="true" />
 
@@ -70,9 +70,11 @@
         <activity
             android:name=".TimelineActivity"
             android:label="@string/title_activity_timeline" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="tatami.android.LoginActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

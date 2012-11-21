@@ -35,15 +35,15 @@ public class Application extends android.app.Application {
 	}
 
 	protected void startScheduleTask() {
-		Calendar cal = Calendar.getInstance();
-
-		Intent intent = new Intent(this, CheckNewStatus.class);
-		PendingIntent pendingIntent = PendingIntent.getService(this, 12456789,
-				intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
-		am.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-				AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+//		Calendar cal = Calendar.getInstance();
+//
+//		Intent intent = new Intent(this, CheckNewStatus.class);
+//		PendingIntent pendingIntent = PendingIntent.getService(this, 12456789,
+//				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
+//		am.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+//				AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
 	}
 
 	public boolean isConnected() {

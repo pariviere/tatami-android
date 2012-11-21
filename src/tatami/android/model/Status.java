@@ -5,16 +5,35 @@ package tatami.android.model;
 import java.util.Date;
 
 import com.github.rjeschke.txtmark.Processor;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 
+
+@DatabaseTable(tableName = "status")
 public class Status {
+	
+	@DatabaseField(id = true, canBeNull = false, index = true)
 	private String statusId;
+	
+	
+	@DatabaseField(canBeNull = false)
 	private String username;
+	
+	@DatabaseField()
 	private String gravatar;
+	
+	@DatabaseField()
 	private String firstName;
+	
+	@DatabaseField(canBeNull = false)
 	private String content;
 	private String htmlContent;
+	
+	@DatabaseField(canBeNull = false)
 	private Date  statusDate;
+	
+	public Status() {}
 	
 	public Date getStatusDate() {
 		return statusDate;

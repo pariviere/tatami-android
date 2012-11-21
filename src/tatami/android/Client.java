@@ -159,16 +159,6 @@ public class Client {
 		}
 	}
 
-	/**
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public List<Status> getTimeline() throws Exception {
-		List<Status> statuses = getTimeline(null);
-
-		return statuses;
-	}
 
 	/**
 	 * 

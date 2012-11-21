@@ -1,5 +1,6 @@
 package tatami.android.account;
 
+import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.task.DoLogin;
 import tatami.android.task.LoginListener;
@@ -101,7 +102,7 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 	public void onLoginSucceed() {
 		Log.d(TAG, "Login succeed :  save account information");
 
-		final Account account = new Account(this.mail, "tatami.android.account");
+		final Account account = new Account(this.mail, Constants.ACCOUNT_TYPE);
 
 		if (newRequest) {
 			accountManager.addAccountExplicitly(account, this.passwd, null);
@@ -110,8 +111,7 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 		final Intent intent = new Intent();
 		intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, this.mail);
 		intent.putExtra(AccountManager.KEY_PASSWORD, this.passwd);
-		intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE,
-				"tatami.android.account");
+		intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
 
 		setAccountAuthenticatorResult(intent.getExtras());
 		setResult(RESULT_OK, intent);

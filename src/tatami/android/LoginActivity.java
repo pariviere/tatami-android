@@ -1,6 +1,5 @@
 package tatami.android;
 
-import tatami.android.task.DoLogin;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
