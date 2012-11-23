@@ -4,11 +4,11 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
-import tatami.android.Client;
+import tatami.android.Constants;
 import tatami.android.TimelineActivity;
-import android.content.Intent;
+import tatami.android.model.StatusFactory;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 /**
@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 public class GetTimeline
 		extends
 		AsyncTask<SimpleEntry<String, String>, Void, List<tatami.android.model.Status>> {
+	
 	private final TimelineActivity timeline;
 
 	public GetTimeline(TimelineActivity timeline) {
@@ -37,8 +38,22 @@ public class GetTimeline
 
 		try {
 
-			List<tatami.android.model.Status> statuses = Client.getInstance()
-					.getTimeline(params);
+			Uri.Builder fullUri = new Uri.Builder();
+			fullUri.scheme("content");
+			fullUri.authority(Constants.AUTHORITY);
+			fullUri.appendPath("status");
+
+			Cursor cursor = timeline.getContentResolver().query(
+					fullUri.build(), null, null, null, null);
+
+			List<tatami.android.model.Status> statuses = new ArrayList<tatami.android.model.Status>();
+
+			while (cursor.moveToNext()) {
+				tatami.android.model.Status status = StatusFactory
+						.fromCursorRow(cursor);
+
+				statuses.add(status);
+			}
 
 			return statuses;
 		} catch (Exception ex) {

@@ -1,6 +1,5 @@
 package tatami.android;
 
-import tatami.android.task.DoLogin;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -49,7 +48,7 @@ public class LoginActivity extends Activity {
 	 */
 	public void doLogin(View view) {
 
-		Application app = (Application) getApplication();
+		TatamiApp app = (TatamiApp) getApplication();
 
 		if (!app.isConnected()) {
 			Toast.makeText(this, "No network found", Toast.LENGTH_SHORT).show();
@@ -71,7 +70,7 @@ public class LoginActivity extends Activity {
 			this.progressDialog = ProgressDialog.show(this, null,
 					getString(R.string.authentication_in_progress), true);
 
-			new DoLogin(this).execute(login, passwd);
+//			new DoLogin(this).execute(login, passwd);
 		}
 	}
 

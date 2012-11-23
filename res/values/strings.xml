@@ -10,5 +10,6 @@
     <string name="authentication_in_progress">Authentication in progress</string>
     <string name="login">Login</string>
     <string name="access_denied">Access Denied</string>
+    <string name="password">Password</string>
 
 </resources>
