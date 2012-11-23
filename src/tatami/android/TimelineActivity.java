@@ -3,17 +3,15 @@ package tatami.android;
 import java.util.List;
 
 import tatami.android.model.Status;
-import tatami.android.task.CheckNewStatus;
 import tatami.android.task.GetTimeline;
 import tatami.android.task.IterateStatus;
 import tatami.android.widget.TimelineScrollListener;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.ListActivity;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Messenger;
 import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,9 +47,9 @@ public class TimelineActivity extends ListActivity {
 		return statusesAdapter;
 	}
 
-	public void doReload(View view) {
+	public void doReload(View view) {		
 
-		Application app = (Application) getApplication();
+		TatamiApp app = (TatamiApp) getApplication();
 
 		if (!app.isConnected()) {
 			Toast.makeText(this, "No network found", Toast.LENGTH_SHORT).show();
@@ -61,8 +59,8 @@ public class TimelineActivity extends ListActivity {
 			this.listView.setOnScrollListener(new TimelineScrollListener(this));
 			new GetTimeline(this).execute();
 
-			NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			manager.cancel(CheckNewStatus.class.hashCode());
+//			NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//			manager.cancel(CheckNewStatus.class.hashCode());
 		}
 	}
 
@@ -71,13 +69,6 @@ public class TimelineActivity extends ListActivity {
 	 * </p>
 	 */
 	public void populateListView(List<tatami.android.model.Status> statuses) {
-
-		if (statuses.size() > 0) {
-			Status lastSeen = statuses.get(0);
-
-			Application app = (Application) getApplication();
-			app.setLastSeen(lastSeen);
-		}
 		new IterateStatus(this).execute(statuses.toArray(new Status[] {}));
 	}
 
@@ -90,9 +81,20 @@ public class TimelineActivity extends ListActivity {
 		this.statusesAdapter = new StatusesAdapter(this);
 		this.listView.setAdapter(statusesAdapter);
 
-		Intent intent = new Intent(this, CheckNewStatus.class);
-		Messenger messenger = new Messenger(newStatusHandler);
-		intent.putExtra("tatami.android.timelineMessenger", messenger);
+		
+		
+		AccountManager accountManager = AccountManager.get(this);
+		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+		
+		Account mine = accounts[0];
+		
+		String passwd = accountManager.getPassword(mine);
+		
+		System.out.println(mine + " : " + passwd);
+		
+//		Intent intent = new Intent(this, CheckNewStatus.class);
+//		Messenger messenger = new Messenger(newStatusHandler);
+//		intent.putExtra("tatami.android.timelineMessenger", messenger);
 		// this.startService(intent);
 
 	}
