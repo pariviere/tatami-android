@@ -2,6 +2,7 @@ package tatami.android.account;
 
 import tatami.android.Constants;
 import tatami.android.R;
+import tatami.android.TatamiApp;
 import tatami.android.task.DoLogin;
 import tatami.android.task.LoginListener;
 import android.accounts.Account;
@@ -76,17 +77,28 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 	 * @param view
 	 */
 	public void onLogin(View view) {
-		mail = mailEditText.getText().toString();
-		passwd = passwdEditText.getText().toString();
 
-		if (TextUtils.isEmpty(mail) || TextUtils.isEmpty(passwd)) {
-			Log.w(TAG, "Mail and password required");
+		TatamiApp app = (TatamiApp) getApplication();
+
+		if (!app.isConnected()) {
+			Log.i(TAG, "No network found. Login process abort");
+			Toast.makeText(this, "No network found. Login process abort",
+					Toast.LENGTH_LONG).show();
 		} else {
-			Log.d(TAG, String.format(
-					"Proceed authentication : login is '%s', passwd is '%s'",
-					mail, passwd));
-			DoLogin doLogin = new DoLogin(this);
-			doLogin.execute(mail, passwd);
+
+			mail = mailEditText.getText().toString();
+			passwd = passwdEditText.getText().toString();
+
+			if (TextUtils.isEmpty(mail) || TextUtils.isEmpty(passwd)) {
+				Log.w(TAG, "Mail and password required");
+			} else {
+				Log.d(TAG,
+						String.format(
+								"Proceed authentication : login is '%s', passwd is '%s'",
+								mail, passwd));
+				DoLogin doLogin = new DoLogin(this);
+				doLogin.execute(mail, passwd);
+			}
 		}
 	}
 

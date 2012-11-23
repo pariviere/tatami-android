@@ -2,11 +2,11 @@ package tatami.android.task;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import tatami.android.Constants;
 import tatami.android.TimelineActivity;
+import tatami.android.model.StatusFactory;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 public class GetTimeline
 		extends
 		AsyncTask<SimpleEntry<String, String>, Void, List<tatami.android.model.Status>> {
+	
 	private final TimelineActivity timeline;
 
 	public GetTimeline(TimelineActivity timeline) {
@@ -48,24 +49,10 @@ public class GetTimeline
 			List<tatami.android.model.Status> statuses = new ArrayList<tatami.android.model.Status>();
 
 			while (cursor.moveToNext()) {
-				String statusId = cursor.getString(cursor
-						.getColumnIndex("statusId"));
-				String username = cursor.getString(cursor
-						.getColumnIndex("username"));
-				String content = cursor.getString(cursor
-						.getColumnIndex("content"));
-				String gravatar = cursor.getString(cursor
-						.getColumnIndex("gravatar"));
+				tatami.android.model.Status status = StatusFactory
+						.fromCursorRow(cursor);
 
-				tatami.android.model.Status status = new tatami.android.model.Status();
-				status.setStatusId(statusId);
-				status.setContent(content);
-				status.setUsername(username);
-				status.setStatusDate(new Date());
-				status.setGravatar(gravatar);
-				
 				statuses.add(status);
-
 			}
 
 			return statuses;

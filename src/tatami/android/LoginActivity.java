@@ -48,7 +48,7 @@ public class LoginActivity extends Activity {
 	 */
 	public void doLogin(View view) {
 
-		Application app = (Application) getApplication();
+		TatamiApp app = (TatamiApp) getApplication();
 
 		if (!app.isConnected()) {
 			Toast.makeText(this, "No network found", Toast.LENGTH_SHORT).show();

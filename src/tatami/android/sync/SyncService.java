@@ -7,13 +7,14 @@ import android.util.Log;
 
 /**
  * <p>
- * Entry point for {@link SyncAdapter}
+ * Entry point for {@link SyncAdapter} : Android will start this service,
+ * retrieve the binded {@link SyncAdapter} and perform sync
  * </p>
  * 
  * @author pariviere
  */
 public class SyncService extends Service {
-	private static String TAG = SyncService.class.getName();
+	private static String TAG = SyncService.class.getSimpleName();
 
 	private static final Object syncAdapterLock = new Object();
 	private SyncAdapter syncAdapter;

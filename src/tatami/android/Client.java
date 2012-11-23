@@ -33,12 +33,6 @@ public class Client {
 		return _client;
 	}
 
-	private Status lastStatus;
-
-	public Status getLastStatus() {
-		return lastStatus;
-	}
-
 	private String login = null;
 	private String passwd = null;
 
@@ -141,18 +135,6 @@ public class Client {
 
 			List<Status> statuses = jsonToStatuses(jsonArray);
 
-			if (statuses.size() > 0) {
-				Status relativeLastStatus = statuses.get(0);
-
-				if (lastStatus == null) {
-					lastStatus = relativeLastStatus;
-				} else {
-					if (lastStatus.getStatusDate().before(
-							relativeLastStatus.getStatusDate())) {
-						lastStatus = relativeLastStatus;
-					}
-				}
-			}
 			return statuses;
 		} finally {
 			timelineConnection.disconnect();
