@@ -57,11 +57,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		try {
 			SimpleEntry<String, String> queryParams = null;
 
-			Status last = queryLastStatus(provider);
+			if (extras.containsKey(SyncMeta.BEFORE_ID)) {
+				String beforeStatusId = extras.getString(SyncMeta.BEFORE_ID);
 
-			if (last != null) {
-				queryParams = new SimpleEntry<String, String>("since_id",
-						last.getStatusId());
+				queryParams = new SimpleEntry<String, String>("max_id",
+						beforeStatusId);
+			} else {
+
+				Status last = queryLastStatus(provider);
+
+				if (last != null) {
+					queryParams = new SimpleEntry<String, String>("since_id",
+							last.getStatusId());
+				}
 			}
 
 			Log.d(TAG, "Launch authentication with " + login + ":" + passwd);
@@ -115,7 +123,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 			NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-			inboxStyle.setBigContentTitle("New Statuses!");
+			inboxStyle.setBigContentTitle(statuses.size() + " new statuses!");
 
 			for (Status status : statuses) {
 

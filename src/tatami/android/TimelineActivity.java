@@ -3,16 +3,18 @@ package tatami.android;
 import java.util.List;
 
 import tatami.android.model.Status;
+import tatami.android.sync.SyncMeta;
 import tatami.android.task.GetTimeline;
 import tatami.android.task.IterateStatus;
-import tatami.android.widget.TimelineScrollListener;
-import android.accounts.Account;
-import android.accounts.AccountManager;
+import tatami.android.task.TriggerSync;
+import tatami.android.widget.StatusesAdapter;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.NavUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +25,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 /**
  * <p>
  * 
@@ -32,36 +38,20 @@ import android.widget.Toast;
  */
 public class TimelineActivity extends ListActivity {
 	private StatusesAdapter statusesAdapter = null;
-	private ListView listView = null;
+	private PullToRefreshListView listView = null;
 	private MenuItem refreshMenuItem;
-
-	private Handler newStatusHandler = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-
-			Toast.makeText(TimelineActivity.this, "Received " + msg.arg1,
-					Toast.LENGTH_SHORT).show();
-		}
-	};
 
 	public StatusesAdapter getStatusesAdapter() {
 		return statusesAdapter;
 	}
 
-	public void doReload(View view) {		
+	public void doReload(View view) {
 
 		TatamiApp app = (TatamiApp) getApplication();
 
-		if (!app.isConnected()) {
-			Toast.makeText(this, "No network found", Toast.LENGTH_SHORT).show();
-		} else {
-			this.listView.setOnScrollListener(null);
-			this.statusesAdapter.clear();
-			this.listView.setOnScrollListener(new TimelineScrollListener(this));
-			new GetTimeline(this).execute();
-
-//			NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//			manager.cancel(CheckNewStatus.class.hashCode());
-		}
+//		this.statusesAdapter.clear();
+//		this.statusesAdapter.notifyDataSetChanged();
+		new GetTimeline(this).execute();
 	}
 
 	/**
@@ -77,26 +67,29 @@ public class TimelineActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 
-		this.listView = getListView();
+		this.listView = (PullToRefreshListView) findViewById(R.id.status_list_view);
+
+		this.listView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				listView.setLastUpdatedLabel(DateUtils.formatDateTime(
+						getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL));
+
+				Intent intent = new Intent(TimelineActivity.this,
+						TriggerSync.class);
+
+				intent.putExtra(SyncMeta.BEFORE_ID,
+						statusesAdapter.getItem(statusesAdapter.getCount() - 1)
+								.getStatusId());
+
+				startService(intent);
+			}
+		});
+
 		this.statusesAdapter = new StatusesAdapter(this);
 		this.listView.setAdapter(statusesAdapter);
-
-		
-		
-		AccountManager accountManager = AccountManager.get(this);
-		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		
-		Account mine = accounts[0];
-		
-		String passwd = accountManager.getPassword(mine);
-		
-		System.out.println(mine + " : " + passwd);
-		
-//		Intent intent = new Intent(this, CheckNewStatus.class);
-//		Messenger messenger = new Messenger(newStatusHandler);
-//		intent.putExtra("tatami.android.timelineMessenger", messenger);
-		// this.startService(intent);
-
 	}
 
 	@Override

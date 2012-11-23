@@ -1,6 +1,7 @@
 package tatami.android.widget;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Date;
 
 import tatami.android.TimelineActivity;
 import tatami.android.model.Status;
@@ -49,7 +50,6 @@ public class TimelineScrollListener implements OnScrollListener {
 		this.timeline = timeline;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
@@ -65,14 +65,13 @@ public class TimelineScrollListener implements OnScrollListener {
 		if (!loading
 				&& (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
 
-			int count = timeline.getStatusesAdapter().getCount();
-			Status last = timeline.getStatusesAdapter().getItem(count - 1);
-			String lastId = last.getStatusId();
-
-			new GetTimeline(timeline).execute(new SimpleEntry<String, String>(
-					"max_id", lastId));
-
-			loading = true;
+//			int count = timeline.getStatusesAdapter().getCount();
+//			Status last = timeline.getStatusesAdapter().getItem(count - 1);
+//
+//			new GetTimeline(timeline).execute(new SimpleEntry<String, Status>(
+//					"before", last));
+//
+//			loading = true;
 		}
 	}
 

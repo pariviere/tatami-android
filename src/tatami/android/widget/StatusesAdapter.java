@@ -1,12 +1,10 @@
-package tatami.android;
+package tatami.android.widget;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
+import tatami.android.R;
 import tatami.android.model.Status;
-import tatami.android.widget.TagDecorator;
-import tatami.android.widget.UsernameDecorator;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;

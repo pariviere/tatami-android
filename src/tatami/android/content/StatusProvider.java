@@ -20,7 +20,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 
 /**
  * <p>
- * Status implements the {@link ContentProvider} API. There's available 
+ * Status implements the {@link ContentProvider} API. There's available
  * </p>
  * <p>
  * content://tatami.android.provider/status/990099-0909-099
@@ -51,7 +51,7 @@ public class StatusProvider extends ContentProvider {
 		if (uriMatcher.match(uri) != UriMatcher.STATUSES) {
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
-
+		
 		Status newStatus = StatusFactory.from(values);
 
 		try {
@@ -63,7 +63,7 @@ public class StatusProvider extends ContentProvider {
 			builder.appendPath(newStatus.getStatusId());
 
 			Uri itemUri = builder.build();
-			
+
 			if (dao.queryForId(newStatus.getStatusId()) == null) {
 				dao.create(newStatus);
 
@@ -71,11 +71,11 @@ public class StatusProvider extends ContentProvider {
 			} else {
 				Log.d(TAG, "Record with statusId = " + newStatus.getStatusId()
 						+ " already exists");
-				
+
 			}
-			
+			getContext().getContentResolver().notifyChange(uri, null);
 			return itemUri;
-			
+
 		} catch (SQLException se) {
 			throw new android.database.SQLException("", se);
 		}
@@ -106,19 +106,29 @@ public class StatusProvider extends ContentProvider {
 			QueryBuilder<Status, String> queryBuilder = dao.queryBuilder();
 
 			switch (uriMatcher.match(uri)) {
-			case UriMatcher.STATUSES:
-				// nothing more to do here
+			case UriMatcher.STATUS_BEFORE:
+
+				String lastStatusId = uri.getLastPathSegment();
+				Status last = dao.queryForId(lastStatusId);
+
+				if (last != null) {
+					Log.d(TAG, "Where statusDate <= " + last.getStatusDate().getTime());
+					queryBuilder.where().le("statusDate", last.getStatusDate());
+				}
+
 				break;
+				
 			case UriMatcher.STATUS_LAST:
-				queryBuilder.orderBy("statusDate", false);
 				queryBuilder.limit(Long.valueOf("1"));
 				break;
+				
 			case UriMatcher.STATUS_ID:
 				String statusId = uri.getLastPathSegment();
 				queryBuilder.where().eq("statusId", statusId);
 				break;
 			}
 
+			queryBuilder.orderBy("statusDate", false);
 			CloseableIterator<Status> iterator = dao.iterator(queryBuilder
 					.prepare());
 			AndroidDatabaseResults results = (AndroidDatabaseResults) iterator

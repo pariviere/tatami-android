@@ -15,14 +15,15 @@ import tatami.android.Constants;
  *  <li>content://tatami.android.provider/status/88838-88899 : item with statusId  88838-88899</li>
  *  <li>content://tatami.android.provider/status/last : most recent status</li>
  * <ul>
- * </p>
+ * </p>selection
  * 
  * @author pariviere
  */
 public class UriMatcher extends android.content.UriMatcher {
 	public  static final int STATUSES = 1;
 	public  static final int STATUS_ID = 2;
-	public  static final int STATUS_LAST = 3;	
+	public  static final int STATUS_LAST = 3;
+	public  static final int STATUS_BEFORE = 4;
 	
 	public UriMatcher() {
 		super(UriMatcher.NO_MATCH);
@@ -32,6 +33,7 @@ public class UriMatcher extends android.content.UriMatcher {
 	protected void loadRules() {
 		addURI(Constants.AUTHORITY, "status", STATUSES);
 		addURI(Constants.AUTHORITY, "status/last", STATUS_LAST);
+		addURI(Constants.AUTHORITY, "status/before/*", STATUS_BEFORE);
 		addURI(Constants.AUTHORITY, "status/*", STATUS_ID);
 	}
 }

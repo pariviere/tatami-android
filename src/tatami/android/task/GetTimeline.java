@@ -19,7 +19,7 @@ import android.os.AsyncTask;
  */
 public class GetTimeline
 		extends
-		AsyncTask<SimpleEntry<String, String>, Void, List<tatami.android.model.Status>> {
+		AsyncTask<SimpleEntry<String, tatami.android.model.Status>, Void, List<tatami.android.model.Status>> {
 	
 	private final TimelineActivity timeline;
 
@@ -34,7 +34,7 @@ public class GetTimeline
 
 	@Override
 	protected List<tatami.android.model.Status> doInBackground(
-			SimpleEntry<String, String>... params) {
+			SimpleEntry<String, tatami.android.model.Status>... params) {
 
 		try {
 
@@ -42,6 +42,13 @@ public class GetTimeline
 			fullUri.scheme("content");
 			fullUri.authority(Constants.AUTHORITY);
 			fullUri.appendPath("status");
+			
+			if (params != null) {
+				for (SimpleEntry<String, tatami.android.model.Status> param : params) {
+					fullUri.appendPath(param.getKey());
+					fullUri.appendPath(param.getValue().getStatusId());
+				}
+			}
 
 			Cursor cursor = timeline.getContentResolver().query(
 					fullUri.build(), null, null, null, null);

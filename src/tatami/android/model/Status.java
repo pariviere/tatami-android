@@ -29,7 +29,7 @@ public class Status {
 	private String content;
 	private String htmlContent;
 
-	@DatabaseField(canBeNull = false, dataType = DataType.DATE_LONG)
+	@DatabaseField(canBeNull = false, dataType = DataType.DATE_LONG, index = true)
 	private Date statusDate;
 
 	public Status() {
