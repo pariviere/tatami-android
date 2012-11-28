@@ -115,7 +115,7 @@ public class StatusProvider extends ContentProvider {
 					Log.d(TAG, "Where statusDate <= " + last.getStatusDate().getTime());
 					queryBuilder.where().le("statusDate", last.getStatusDate());
 				}
-
+				
 				break;
 				
 			case UriMatcher.STATUS_LAST:
@@ -124,7 +124,14 @@ public class StatusProvider extends ContentProvider {
 				
 			case UriMatcher.STATUS_ID:
 				String statusId = uri.getLastPathSegment();
+				Log.d(TAG, "Fetch by status id  : " + statusId);
 				queryBuilder.where().eq("statusId", statusId);
+				break;
+				
+			case UriMatcher.STATUS_KEY:
+				String primaryKey = uri.getLastPathSegment();
+				Log.d(TAG, "Fetch by primary key : " + primaryKey);
+				queryBuilder.where().idEq(primaryKey);
 				break;
 			}
 

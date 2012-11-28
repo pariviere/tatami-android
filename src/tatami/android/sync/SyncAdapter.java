@@ -56,6 +56,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 		try {
 			SimpleEntry<String, String> queryParams = null;
+			
+			boolean autosync = false;
 
 			if (extras.containsKey(SyncMeta.BEFORE_ID)) {
 				String beforeStatusId = extras.getString(SyncMeta.BEFORE_ID);
@@ -63,6 +65,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				queryParams = new SimpleEntry<String, String>("max_id",
 						beforeStatusId);
 			} else {
+				autosync = true;
 
 				Status last = queryLastStatus(provider);
 
@@ -95,7 +98,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				Uri newUri = provider.insert(fullUri.build(), statusValues);
 			}
 
-			notifyNewStatus(statuses);
+			
+			if (autosync)
+				notifyNewStatus(statuses);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Log.e(TAG, ex.getMessage(), ex);
@@ -104,6 +109,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 
 	protected void notifyNewStatus(List<Status> statuses) {
+		Log.d(TAG, "Need to notify user");
 		if (statuses.size() > 0) {
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
 					this.getContext()).setSmallIcon(R.drawable.ic_launcher)

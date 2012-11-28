@@ -1,32 +1,21 @@
 package tatami.android;
 
-import java.util.List;
-
-import tatami.android.model.Status;
-import tatami.android.sync.SyncMeta;
-import tatami.android.task.GetTimeline;
-import tatami.android.task.IterateStatus;
-import tatami.android.task.TriggerSync;
+import tatami.android.widget.StatusObserver;
 import tatami.android.widget.StatusesAdapter;
 import android.app.ListActivity;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 /**
@@ -37,29 +26,37 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
  * @author pariviere
  */
 public class TimelineActivity extends ListActivity {
+	private final static String TAG = TimelineActivity.class.getSimpleName();
 	private StatusesAdapter statusesAdapter = null;
-	private PullToRefreshListView listView = null;
+	private PullToRefreshListView pullToRefreshListView = null;
 	private MenuItem refreshMenuItem;
+	private StatusObserver observer = null;
 
 	public StatusesAdapter getStatusesAdapter() {
 		return statusesAdapter;
 	}
 
-	public void doReload(View view) {
-
-		TatamiApp app = (TatamiApp) getApplication();
-
-//		this.statusesAdapter.clear();
-//		this.statusesAdapter.notifyDataSetChanged();
-		new GetTimeline(this).execute();
+	public PullToRefreshListView getPullToRefreshListView() {
+		return this.pullToRefreshListView;
 	}
 
-	/**
-	 * <p>
-	 * </p>
-	 */
-	public void populateListView(List<tatami.android.model.Status> statuses) {
-		new IterateStatus(this).execute(statuses.toArray(new Status[] {}));
+	public void stopLoading() {
+		Log.d(TAG, "Stop refresh animation");
+
+		Cursor cursor = managedQuery(
+				Uri.parse("content://tatami.android.provider/status/"), null,
+				null, null, null);
+		statusesAdapter.swapCursor(cursor);
+			
+		statusesAdapter.notifyDataSetChanged();
+		if (pullToRefreshListView.isRefreshing()) {
+			pullToRefreshListView.onRefreshComplete();
+
+			pullToRefreshListView.refreshDrawableState();
+
+			pullToRefreshListView.getRefreshableView().refreshDrawableState();
+		}
+
 	}
 
 	@Override
@@ -67,35 +64,28 @@ public class TimelineActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 
-		this.listView = (PullToRefreshListView) findViewById(R.id.status_list_view);
+		this.pullToRefreshListView = (PullToRefreshListView) findViewById(R.id.status_list_view);
 
-		this.listView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-			@Override
-			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-				listView.setLastUpdatedLabel(DateUtils.formatDateTime(
-						getApplicationContext(), System.currentTimeMillis(),
-						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-								| DateUtils.FORMAT_ABBREV_ALL));
+		observer = new StatusObserver(this);
 
-				Intent intent = new Intent(TimelineActivity.this,
-						TriggerSync.class);
+		this.pullToRefreshListView.setOnRefreshListener(observer);
 
-				intent.putExtra(SyncMeta.BEFORE_ID,
-						statusesAdapter.getItem(statusesAdapter.getCount() - 1)
-								.getStatusId());
+		this.getContentResolver().registerContentObserver(
+				Uri.parse("content://tatami.android.provider/status/"), false,
+				observer);
 
-				startService(intent);
-			}
-		});
+		Cursor cursor = managedQuery(
+				Uri.parse("content://tatami.android.provider/status/"), null,
+				null, null, null);
 
-		this.statusesAdapter = new StatusesAdapter(this);
-		this.listView.setAdapter(statusesAdapter);
+		this.statusesAdapter = new StatusesAdapter(this, cursor);
+		this.pullToRefreshListView.setAdapter(statusesAdapter);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		doReload(null);
+		// doReload(null);
 	}
 
 	@Override
@@ -115,7 +105,7 @@ public class TimelineActivity extends ListActivity {
 			return true;
 
 		case R.id.menu_refresh:
-			doReload(null);
+			// doReload(null);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

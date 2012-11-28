@@ -10,7 +10,10 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "status")
 public class Status {
 
-	@DatabaseField(id = true, unique = true, canBeNull = false, index = true)
+	@DatabaseField(columnName = "_id", generatedId = true)
+	private long id;
+	
+	@DatabaseField(unique = true, canBeNull = false, index = true)
 	private String statusId;
 
 	@DatabaseField(canBeNull = false, index = true)
@@ -27,11 +30,11 @@ public class Status {
 
 	@DatabaseField(canBeNull = false)
 	private String content;
+
 	private String htmlContent;
 
 	@DatabaseField(canBeNull = false, dataType = DataType.DATE_LONG, index = true)
 	private Date statusDate;
-
 	public Status() {
 	}
 
@@ -54,6 +57,10 @@ public class Status {
 		}
 
 		return htmlContent;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public String getLastName() {
@@ -82,6 +89,10 @@ public class Status {
 
 	public void setGravatar(String gravatar) {
 		this.gravatar = gravatar;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public void setLastName(String lastName) {

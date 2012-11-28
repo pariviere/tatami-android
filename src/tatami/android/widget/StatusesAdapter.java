@@ -3,8 +3,12 @@ package tatami.android.widget;
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 import tatami.android.R;
 import tatami.android.model.Status;
+import tatami.android.model.StatusFactory;
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.CursorWrapper;
+import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +33,7 @@ import com.fedorvlasov.lazylist.ImageLoader;
  * 
  * @author pariviere
  */
-public class StatusesAdapter extends ArrayAdapter<Status> {
+public class StatusesAdapter extends CursorAdapter {
 	private ImageLoader imageLoader;
 	private HtmlSpanner htmlSpanner;
 
@@ -39,46 +43,80 @@ public class StatusesAdapter extends ArrayAdapter<Status> {
 		public TextView info;
 	}
 
-	public StatusesAdapter(Activity context) {
-		super(context, R.layout.list_status);
+	public StatusesAdapter(Context context, Cursor c) {
+		super(context, c);
 		imageLoader = new ImageLoader(context);
 		htmlSpanner = new HtmlSpanner();
 	}
 
+	//
+	// public StatusesAdapter(Activity context) {
+	// super(context, R.layout.list_status);
+
+	// }
+
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View rowView = convertView;
+	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+		View rowView = null;
 
-		if (rowView == null) {
-			LayoutInflater inflater = (LayoutInflater) getContext()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rowView = inflater.inflate(R.layout.list_status, null);
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		rowView = inflater.inflate(R.layout.list_status, null);
 
-			ViewHolder viewHolder = new ViewHolder();
-			viewHolder.avatar = (ImageView) rowView.findViewById(R.id.avatar);
-			viewHolder.status = (TextView) rowView.findViewById(R.id.status);
-			viewHolder.info = (TextView) rowView.findViewById(R.id.info);
+		ViewHolder viewHolder = new ViewHolder();
+		viewHolder.avatar = (ImageView) rowView.findViewById(R.id.avatar);
+		viewHolder.status = (TextView) rowView.findViewById(R.id.status);
+		viewHolder.info = (TextView) rowView.findViewById(R.id.info);
 
-			rowView.setTag(viewHolder);
-		}
+		rowView.setTag(viewHolder);
 
-		Status status = getItem(position);
-		ViewHolder viewHolder = (ViewHolder) rowView.getTag();
+		return rowView;
+	}
+
+	@Override
+	public void bindView(View view, Context context, Cursor cursor) {
+		Status status = StatusFactory.fromCursorRow(cursor);
+		
+		ViewHolder viewHolder = (ViewHolder) view.getTag();
 
 		buildStatusTextView(viewHolder.status, status);
 		buildAvatarTextView(viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
-
-		return rowView;
 	}
+
+//	@Override
+//	public View getView(int position, View convertView, ViewGroup parent) {
+//		View rowView = convertView;
+//
+//		if (rowView == null) {
+//			LayoutInflater inflater = (LayoutInflater) getContext()
+//					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			rowView = inflater.inflate(R.layout.list_status, null);
+//
+//			ViewHolder viewHolder = new ViewHolder();
+//			viewHolder.avatar = (ImageView) rowView.findViewById(R.id.avatar);
+//			viewHolder.status = (TextView) rowView.findViewById(R.id.status);
+//			viewHolder.info = (TextView) rowView.findViewById(R.id.info);
+//
+//			rowView.setTag(viewHolder);
+//		}
+//
+//		Status status = getItem(position);
+//		ViewHolder viewHolder = (ViewHolder) rowView.getTag();
+//
+//		buildStatusTextView(viewHolder.status, status);
+//		buildAvatarTextView(viewHolder.avatar, status);
+//		buildInfoTextView(viewHolder.info, status);
+//
+//		return rowView;
+//	}
 
 	private TextView buildInfoTextView(TextView infoTextView, Status status) {
 
 		infoTextView.setTextSize(12);
 
-		String html = status.getFirstName() + " "
-				+ status.getLastName();
-		
+		String html = status.getFirstName() + " " + status.getLastName();
+
 		infoTextView.setText(html);
 
 		return infoTextView;

@@ -25,7 +25,7 @@ public class IterateStatus
 	@Override
 	protected void onProgressUpdate(tatami.android.model.Status... statuses) {
 		for (tatami.android.model.Status status : statuses) {
-			timeline.getStatusesAdapter().add(status);
+//			timeline.getStatusesAdapter().add(status);
 		}
 	}
 }

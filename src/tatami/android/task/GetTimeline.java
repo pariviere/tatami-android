@@ -71,7 +71,7 @@ public class GetTimeline
 
 	@Override
 	protected void onPostExecute(List<tatami.android.model.Status> statuses) {
-		timeline.populateListView(statuses);
-		timeline.notifyNoLoading();
+//		timeline.populateListView(statuses);
+//		timeline.notifyNoLoading();
 	}
 }
