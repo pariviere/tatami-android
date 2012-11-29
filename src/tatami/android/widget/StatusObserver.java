@@ -1,6 +1,7 @@
 package tatami.android.widget;
 
-import tatami.android.TimelineActivity;
+import tatami.android.R;
+import tatami.android.frangment.StatusesList;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import tatami.android.sync.SyncMeta;
@@ -11,22 +12,22 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class StatusObserver extends ContentObserver implements
-		OnRefreshListener {
-	
-	
+		OnRefreshListener<ListView> {
+
 	private boolean loading = false;
-	
+
 	private final static String TAG = StatusObserver.class.getSimpleName();
 
-	private TimelineActivity activity;
+	private StatusesList activity;
 
-	public StatusObserver(TimelineActivity activity) {
+	public StatusObserver(StatusesList activity) {
 		super(null);
 		this.activity = activity;
 	}
@@ -35,47 +36,48 @@ public class StatusObserver extends ContentObserver implements
 	public void onChange(boolean selfChange, Uri uri) {
 		Log.d(TAG, "Detect change on " + uri.toString());
 
-		
-		activity.runOnUiThread(new Runnable() {
-			
+		activity.getActivity().runOnUiThread(new Runnable() {
+
 			@Override
 			public void run() {
-				Log.d(TAG, "OnUI Thread");
 				activity.stopLoading();
 			}
 		});
 	}
 
 	@Override
-	public void onRefresh(PullToRefreshBase refreshView) {
-		
-		
+	public void onRefresh(PullToRefreshBase<ListView>  refreshView) {
 		Log.d(TAG, "OnRefreshListener");
-
-		PullToRefreshListView listView = activity.getPullToRefreshListView();
 		
+		PullToRefreshListView listView = (PullToRefreshListView) refreshView
+				.findViewById(R.id.status_list_view);
+
+		// PullToRefreshListView listView = activity.getPullToRefreshListView();
+
 		listView.setLastUpdatedLabel(DateUtils.formatDateTime(
-				activity, System.currentTimeMillis(),
+				activity.getActivity(), System.currentTimeMillis(),
 				DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
 						| DateUtils.FORMAT_ABBREV_ALL));
 
-		Intent intent = new Intent(activity, TriggerSync.class);
+		Intent intent = new Intent(activity.getActivity(), TriggerSync.class);
 
 		StatusesAdapter statusesAdapter = activity.getStatusesAdapter();
-		
+
 		long id = statusesAdapter.getItemId(statusesAdapter.getCount() - 1);
 
 		Log.d(TAG, "Last status primary key is  " + id);
 
-		Cursor cursor = activity.getContentResolver().query(
-				Uri.parse("content://tatami.android.provider/status/" + id),
-				null, null, null, null);
+		Cursor cursor = activity
+				.getActivity()
+				.getContentResolver()
+				.query(Uri.parse("content://tatami.android.provider/status/"
+						+ id), null, null, null, null);
 
 		Status status = StatusFactory.fromCursorRow(cursor);
 		String statusId = status.getStatusId();
 		intent.putExtra(SyncMeta.BEFORE_ID, statusId);
 
-		activity.startService(intent);
+		activity.getActivity().startService(intent);
 	}
 
 }

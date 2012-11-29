@@ -4,10 +4,8 @@ import net.nightwhistler.htmlspanner.HtmlSpanner;
 import tatami.android.R;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
@@ -30,6 +28,9 @@ import com.fedorvlasov.lazylist.ImageLoader;
  * {@link StatusesAdapter}{@link #addAll(java.util.Collection)} in order to
  * populate {@link Status}.
  * </p>
+ * 
+ * 
+ * TODO : move status view building from main thread
  * 
  * @author pariviere
  */
@@ -76,40 +77,13 @@ public class StatusesAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		Status status = StatusFactory.fromCursorRow(cursor);
-		
+
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
 
 		buildStatusTextView(viewHolder.status, status);
 		buildAvatarTextView(viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
 	}
-
-//	@Override
-//	public View getView(int position, View convertView, ViewGroup parent) {
-//		View rowView = convertView;
-//
-//		if (rowView == null) {
-//			LayoutInflater inflater = (LayoutInflater) getContext()
-//					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//			rowView = inflater.inflate(R.layout.list_status, null);
-//
-//			ViewHolder viewHolder = new ViewHolder();
-//			viewHolder.avatar = (ImageView) rowView.findViewById(R.id.avatar);
-//			viewHolder.status = (TextView) rowView.findViewById(R.id.status);
-//			viewHolder.info = (TextView) rowView.findViewById(R.id.info);
-//
-//			rowView.setTag(viewHolder);
-//		}
-//
-//		Status status = getItem(position);
-//		ViewHolder viewHolder = (ViewHolder) rowView.getTag();
-//
-//		buildStatusTextView(viewHolder.status, status);
-//		buildAvatarTextView(viewHolder.avatar, status);
-//		buildInfoTextView(viewHolder.info, status);
-//
-//		return rowView;
-//	}
 
 	private TextView buildInfoTextView(TextView infoTextView, Status status) {
 

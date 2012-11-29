@@ -3,14 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/status_list_view"
+    <fragment
+        android:id="@+id/list_status_fragment"
+        android:name="tatami.android.frangment.StatusesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="false"
-        ptr:ptrMode="pullUpFromBottom" />
-
+        android:layout_height="match_parent" />
     <!--
     <ProgressBar
         android:id="@android:id/empty"
