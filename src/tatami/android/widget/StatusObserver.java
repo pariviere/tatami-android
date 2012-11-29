@@ -1,7 +1,7 @@
 package tatami.android.widget;
 
 import tatami.android.R;
-import tatami.android.frangment.StatusesList;
+import tatami.android.fragment.StatusesList;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import tatami.android.sync.SyncMeta;

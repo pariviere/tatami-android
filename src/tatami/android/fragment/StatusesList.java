@@ -1,4 +1,4 @@
-package tatami.android.frangment;
+package tatami.android.fragment;
 
 import tatami.android.R;
 import tatami.android.widget.StatusObserver;
