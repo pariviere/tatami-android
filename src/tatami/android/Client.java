@@ -15,6 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.github.rjeschke.txtmark.Processor;
+
 import tatami.android.model.Status;
 
 /**
@@ -182,8 +184,11 @@ public class Client {
 			status.setLastName(object.getString("lastName"));
 			status.setUsername(object.getString("username"));
 			status.setGravatar(object.getString("gravatar"));
-			status.setContent(object.getString("content"));
 			status.setFirstName(object.getString("firstName"));
+			
+			String content = object.getString("content");
+			status.setContent(content);
+			status.setHtmlContent(Processor.process(content.replaceAll("#", "\\\\#")));
 
 			long epoch = object.getLong("statusDate");
 			status.setStatusDate(new Date(epoch));

@@ -41,25 +41,25 @@ public class StatusObserver extends ContentObserver implements
 			}
 		});
 	}
-	
 
 	@Override
 	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-//		Log.d(TAG, "onPullDownToRefresh");
-//
-//		PullToRefreshListView listView = (PullToRefreshListView) refreshView
-//				.findViewById(R.id.status_list_view);
-//
-//		listView.setLastUpdatedLabel(DateUtils.formatDateTime(
-//				activity.getActivity(), System.currentTimeMillis(),
-//				DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-//						| DateUtils.FORMAT_ABBREV_ALL));
-//
-//		Intent intent = new Intent(activity.getActivity(), TriggerSync.class);
-//		
-//		intent.putExtra("nothing", "");
-//
-//		activity.getActivity().startService(intent);
+		// Log.d(TAG, "onPullDownToRefresh");
+		//
+		// PullToRefreshListView listView = (PullToRefreshListView) refreshView
+		// .findViewById(R.id.status_list_view);
+		//
+		// listView.setLastUpdatedLabel(DateUtils.formatDateTime(
+		// activity.getActivity(), System.currentTimeMillis(),
+		// DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+		// | DateUtils.FORMAT_ABBREV_ALL));
+		//
+		// Intent intent = new Intent(activity.getActivity(),
+		// TriggerSync.class);
+		//
+		// intent.putExtra("nothing", "");
+		//
+		// activity.getActivity().startService(intent);
 	}
 
 	@Override
@@ -88,10 +88,14 @@ public class StatusObserver extends ContentObserver implements
 				.query(Uri.parse("content://tatami.android.provider/status/"
 						+ id), null, null, null, null);
 
-		Status status = StatusFactory.fromCursorRow(cursor);
-		String statusId = status.getStatusId();
-		intent.putExtra(SyncMeta.BEFORE_ID, statusId);
+		if (cursor.getCount() != 0) {
+			Status status = StatusFactory.fromCursorRow(cursor);
+			String statusId = status.getStatusId();
+			intent.putExtra(SyncMeta.BEFORE_ID, statusId);
 
-		activity.getActivity().startService(intent);
+			activity.getActivity().startService(intent);
+		} else {
+			listView.onRefreshComplete();
+		}
 	}
 }
