@@ -15,14 +15,11 @@ import android.util.Log;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class StatusObserver extends ContentObserver implements
-		OnRefreshListener<ListView> {
-
-	private boolean loading = false;
-
+		OnRefreshListener2<ListView> {
 	private final static String TAG = StatusObserver.class.getSimpleName();
 
 	private StatusesList activity;
@@ -44,15 +41,33 @@ public class StatusObserver extends ContentObserver implements
 			}
 		});
 	}
+	
 
 	@Override
-	public void onRefresh(PullToRefreshBase<ListView>  refreshView) {
-		Log.d(TAG, "OnRefreshListener");
-		
+	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//		Log.d(TAG, "onPullDownToRefresh");
+//
+//		PullToRefreshListView listView = (PullToRefreshListView) refreshView
+//				.findViewById(R.id.status_list_view);
+//
+//		listView.setLastUpdatedLabel(DateUtils.formatDateTime(
+//				activity.getActivity(), System.currentTimeMillis(),
+//				DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+//						| DateUtils.FORMAT_ABBREV_ALL));
+//
+//		Intent intent = new Intent(activity.getActivity(), TriggerSync.class);
+//		
+//		intent.putExtra("nothing", "");
+//
+//		activity.getActivity().startService(intent);
+	}
+
+	@Override
+	public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+		Log.d(TAG, "onPullUpToRefresh");
+
 		PullToRefreshListView listView = (PullToRefreshListView) refreshView
 				.findViewById(R.id.status_list_view);
-
-		// PullToRefreshListView listView = activity.getPullToRefreshListView();
 
 		listView.setLastUpdatedLabel(DateUtils.formatDateTime(
 				activity.getActivity(), System.currentTimeMillis(),
@@ -79,5 +94,4 @@ public class StatusObserver extends ContentObserver implements
 
 		activity.getActivity().startService(intent);
 	}
-
 }

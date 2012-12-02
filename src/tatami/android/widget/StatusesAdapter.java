@@ -45,16 +45,10 @@ public class StatusesAdapter extends CursorAdapter {
 	}
 
 	public StatusesAdapter(Context context, Cursor c) {
-		super(context, c);
+		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		imageLoader = new ImageLoader(context);
 		htmlSpanner = new HtmlSpanner();
 	}
-
-	//
-	// public StatusesAdapter(Activity context) {
-	// super(context, R.layout.list_status);
-
-	// }
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {

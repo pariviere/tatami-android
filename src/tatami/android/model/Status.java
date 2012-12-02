@@ -28,9 +28,11 @@ public class Status {
 	@DatabaseField
 	private String lastName;
 
-	@DatabaseField(canBeNull = false)
+	@DatabaseField(canBeNull = false) 
 	private String content;
 
+	
+	@DatabaseField(canBeNull = false)
 	private String htmlContent;
 
 	@DatabaseField(canBeNull = false, dataType = DataType.DATE_LONG, index = true)
@@ -50,12 +52,11 @@ public class Status {
 		return gravatar;
 	}
 
+	public void setHtmlContent(String htmlContent) {
+		this.htmlContent = htmlContent;
+	}
+	
 	public String getHtmlContent() {
-		if (htmlContent == null) {
-			String cleanContent = content.replaceAll("#", "\\\\#");
-			htmlContent = Processor.process(cleanContent);
-		}
-
 		return htmlContent;
 	}
 

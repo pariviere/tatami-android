@@ -140,7 +140,7 @@ public class StatusProvider extends ContentProvider {
 					.prepare());
 			AndroidDatabaseResults results = (AndroidDatabaseResults) iterator
 					.getRawResults();
-
+			
 			return results.getRawCursor();
 		} catch (SQLException e) {
 			Log.e(TAG, "Can not execute query", e);

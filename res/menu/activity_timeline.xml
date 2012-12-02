@@ -1,6 +1,8 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_refresh"
-        android:title="@string/menu_refresh"
-        android:showAsAction="always" 
-        android:icon="@drawable/ic_action_refresh"  />
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_compose"
+        android:icon="@drawable/ic_menu_new"
+        android:title="@string/menu_new" android:showAsAction="ifRoom" />
+
 </menu>

@@ -54,6 +54,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		String passwd = AccountManager.get(super.getContext()).getPassword(
 				account);
 
+		Uri.Builder fullUri = new Uri.Builder();
+		fullUri.scheme("content");
+		fullUri.authority(Constants.AUTHORITY);
+		fullUri.appendPath("status");
+		
 		try {
 			SimpleEntry<String, String> queryParams = null;
 			
@@ -90,18 +95,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			for (Status status : statuses) {
 				ContentValues statusValues = StatusFactory.to(status);
 
-				Uri.Builder fullUri = new Uri.Builder();
-				fullUri.scheme("content");
-				fullUri.authority(Constants.AUTHORITY);
-				fullUri.appendPath("status");
-
 				Uri newUri = provider.insert(fullUri.build(), statusValues);
 			}
 
-			
 			if (autosync)
 				notifyNewStatus(statuses);
 		} catch (Exception ex) {
+			getContext().getContentResolver().notifyChange(fullUri.build(), null);
+			
 			ex.printStackTrace();
 			Log.e(TAG, ex.getMessage(), ex);
 		}

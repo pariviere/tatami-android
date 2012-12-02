@@ -2,4 +2,37 @@
 
     <style name="AppTheme" parent="android:style/Theme.Holo.Light" />
 
+    <style name="listSeparatorTextViewStyle" parent="@android:attr/listSeparatorTextViewStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:textSize">15dip</item>
+        <item name="android:paddingTop">2dip</item>
+        <item name="android:paddingBottom">3dip</item>
+        <item name="android:paddingLeft">5dip</item>
+        <item name="android:paddingRight">10dip</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
+        <item name="android:shadowColor">#111111</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@android:color/holo_blue_dark</item>
+    </style>
+    <style name="listViewStyle" parent="@android:attr/listViewStyle">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+    <style name="genericListItemFirstTextView">
+        <item name="android:textSize">15dip</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+    <style name="genericListItemSecondTextView">
+        <item name="android:textSize">13dip</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+    </style>
+    <style name="genericListItemShoutTextView">
+        <item name="android:textSize">13dip</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+    </style>
 </resources>

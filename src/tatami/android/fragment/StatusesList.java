@@ -61,6 +61,7 @@ public class StatusesList extends ListFragment implements
 
 		this.pullToRefreshListView = (PullToRefreshListView) view
 				.findViewById(R.id.status_list_view);
+		
 
 		observer = new StatusObserver(this);
 		this.pullToRefreshListView.setOnRefreshListener(observer);

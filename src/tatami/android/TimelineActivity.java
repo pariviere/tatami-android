@@ -3,6 +3,7 @@ package tatami.android;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
 
 /**
  * <p>
@@ -21,4 +22,12 @@ public class TimelineActivity extends FragmentActivity {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_timeline);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_timeline, menu);
+		
+		return true;
+	}
+	
 }

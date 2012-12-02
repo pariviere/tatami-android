@@ -19,6 +19,7 @@ public class StatusFactory {
 		status.setLastName(contentValues.getAsString("lastName"));
 		status.setUsername(contentValues.getAsString("username"));
 		status.setGravatar(contentValues.getAsString("gravatar"));
+		status.setHtmlContent(contentValues.getAsString("htmlContent"));
 		status.setStatusDate(new Date(contentValues.getAsLong("statusDate")));
 
 		return status;
@@ -35,6 +36,7 @@ public class StatusFactory {
 		values.put("username", status.getUsername());
 		values.put("statusDate", status.getStatusDate().getTime());
 		values.put("gravatar", status.getGravatar());
+		values.put("htmlContent", status.getHtmlContent());
 
 		return values;
 	}
@@ -46,6 +48,7 @@ public class StatusFactory {
 		String gravatar = cursor.getString(cursor.getColumnIndex("gravatar"));
 		String lastName = cursor.getString(cursor.getColumnIndex("lastName"));
 		String firstName = cursor.getString(cursor.getColumnIndex("firstName"));
+		String htmlContent = cursor.getString(cursor.getColumnIndex("htmlContent"));
 
 		
 		Status status = new Status();
@@ -56,6 +59,7 @@ public class StatusFactory {
 		status.setGravatar(gravatar);
 		status.setLastName(lastName);
 		status.setFirstName(firstName);
+		status.setHtmlContent(htmlContent);
 
 		return status;
 	}
