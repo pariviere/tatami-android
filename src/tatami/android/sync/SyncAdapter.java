@@ -4,9 +4,9 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
 import tatami.android.Client;
-import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.TimelineActivity;
+import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.accounts.Account;
@@ -54,14 +54,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		String passwd = AccountManager.get(super.getContext()).getPassword(
 				account);
 
-		Uri.Builder fullUri = new Uri.Builder();
-		fullUri.scheme("content");
-		fullUri.authority(Constants.AUTHORITY);
-		fullUri.appendPath("status");
-		
+		Uri fullUri = UriBuilder.getFullUri();
+
 		try {
 			SimpleEntry<String, String> queryParams = null;
-			
+
 			boolean autosync = false;
 
 			if (extras.containsKey(SyncMeta.BEFORE_ID)) {
@@ -95,14 +92,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			for (Status status : statuses) {
 				ContentValues statusValues = StatusFactory.to(status);
 
-				Uri newUri = provider.insert(fullUri.build(), statusValues);
+				provider.insert(fullUri, statusValues);
 			}
 
 			if (autosync)
 				notifyNewStatus(statuses);
 		} catch (Exception ex) {
-			getContext().getContentResolver().notifyChange(fullUri.build(), null);
-			
+			getContext().getContentResolver().notifyChange(fullUri, null);
+
 			ex.printStackTrace();
 			Log.e(TAG, ex.getMessage(), ex);
 		}
@@ -110,11 +107,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 
 	protected void notifyNewStatus(List<Status> statuses) {
-		Log.d(TAG, "Need to notify user");
 		if (statuses.size() > 0) {
+			Log.d(TAG, "Send notification to user");
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
 					this.getContext()).setSmallIcon(R.drawable.ic_launcher)
-					.setContentTitle("Tatami").setContentText("New statuses")
+					.setContentTitle("Tatami").setContentText(statuses.size() + " new statuses!")
 					.setNumber(statuses.size()).setAutoCancel(true);
 
 			Intent resultIntent = new Intent(this.getContext(),
@@ -152,7 +149,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 			NotificationManager manager = (NotificationManager) getContext()
 					.getSystemService(Context.NOTIFICATION_SERVICE);
-			manager.notify(SyncAdapter.class.hashCode(), builder.build());
+			manager.notify(27272727, builder.build());
 		}
 
 	}
@@ -160,13 +157,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	protected Status queryLastStatus(ContentProviderClient provider)
 			throws RemoteException {
 
-		Uri.Builder lastUri = new Uri.Builder();
-		lastUri.scheme("content");
-		lastUri.authority(Constants.AUTHORITY);
-		lastUri.appendPath("status");
-		lastUri.appendPath("last");
+		Uri lastUri = UriBuilder.getLastStatusUri();
 
-		Cursor cursor = provider.query(lastUri.build(), null, null, null, null);
+		Cursor cursor = provider.query(lastUri, null, null, null, null);
 
 		if (cursor.moveToFirst())
 			return StatusFactory.fromCursorRow(cursor);

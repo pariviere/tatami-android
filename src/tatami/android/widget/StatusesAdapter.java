@@ -38,7 +38,7 @@ public class StatusesAdapter extends CursorAdapter {
 	private ImageLoader imageLoader;
 	private HtmlSpanner htmlSpanner;
 
-	private static class ViewHolder {
+	public static class ViewHolder {
 		public ImageView avatar;
 		public TextView status;
 		public TextView info;
@@ -53,7 +53,6 @@ public class StatusesAdapter extends CursorAdapter {
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
 		View rowView = null;
-
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		rowView = inflater.inflate(R.layout.list_status, null);
@@ -79,7 +78,7 @@ public class StatusesAdapter extends CursorAdapter {
 		buildInfoTextView(viewHolder.info, status);
 	}
 
-	private TextView buildInfoTextView(TextView infoTextView, Status status) {
+	public TextView buildInfoTextView(TextView infoTextView, Status status) {
 
 		infoTextView.setTextSize(12);
 
@@ -90,7 +89,7 @@ public class StatusesAdapter extends CursorAdapter {
 		return infoTextView;
 	}
 
-	private ImageView buildAvatarTextView(ImageView avatarImageView,
+	public ImageView buildAvatarTextView(ImageView avatarImageView,
 			Status status) {
 
 		String gravatar = status.getGravatar();
@@ -103,7 +102,7 @@ public class StatusesAdapter extends CursorAdapter {
 		return avatarImageView;
 	}
 
-	private TextView buildStatusTextView(TextView statusTextView, Status status) {
+	public TextView buildStatusTextView(TextView statusTextView, Status status) {
 		statusTextView.setTextSize(14);
 
 		String html = status.getHtmlContent();

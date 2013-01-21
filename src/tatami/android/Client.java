@@ -106,6 +106,31 @@ public class Client {
 		}
 	}
 
+	public List<Status> getDiscussion(String statusId) throws Exception {
+		doAuthenticateIfNecessary();
+
+		URL discussion = new URL(String.format(ClientURL.DISCUSSION, statusId));
+		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection discussionConnection = (HttpURLConnection) discussion
+				.openConnection();
+
+		discussionConnection.addRequestProperty("Accept", "application/json");
+		
+		try {
+			String detailsContent = IOUtils.toString(discussionConnection
+					.getInputStream());
+			
+			JSONObject jsonObj = new JSONObject(detailsContent);
+			JSONArray jsonArray = jsonObj.getJSONArray("discussionStatuses");
+
+			List<Status> statuses = jsonToStatuses(jsonArray);
+
+			return statuses;
+		} finally {
+			discussionConnection.disconnect();
+		}
+	}
+
 	public List<Status> getTimeline(SimpleEntry<String, String>... params)
 			throws Exception {
 
@@ -142,7 +167,6 @@ public class Client {
 			timelineConnection.disconnect();
 		}
 	}
-
 
 	/**
 	 * 
@@ -185,10 +209,11 @@ public class Client {
 			status.setUsername(object.getString("username"));
 			status.setGravatar(object.getString("gravatar"));
 			status.setFirstName(object.getString("firstName"));
-			
+
 			String content = object.getString("content");
 			status.setContent(content);
-			status.setHtmlContent(Processor.process(content.replaceAll("#", "\\\\#")));
+			status.setHtmlContent(Processor.process(content.replaceAll("#",
+					"\\\\#")));
 
 			long epoch = object.getLong("statusDate");
 			status.setStatusDate(new Date(epoch));

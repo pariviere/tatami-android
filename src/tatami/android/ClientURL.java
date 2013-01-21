@@ -5,4 +5,5 @@ public class ClientURL {
 	public static String AUTH		= "http://tatami.ippon.fr/tatami/authentication";
 	public static String LOGIN		= "http://tatami.ippon.fr/tatami/login";
 	public static String TIMELINE	= "http://tatami.ippon.fr/tatami/rest/statuses/home_timeline";
+	public static String DISCUSSION	= "http://tatami.ippon.fr/tatami/rest/statuses/details/%s";
 }

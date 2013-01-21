@@ -26,6 +26,7 @@ public class UriMatcher extends android.content.UriMatcher {
 	public static final int STATUS_KEY = 5;
 	public static final int STATUS_LAST = 3;
 	public static final int STATUS_BEFORE = 4;
+	public static final int STATUS_DISCUSSION = 6;
 
 	public UriMatcher() {
 		super(UriMatcher.NO_MATCH);
@@ -38,5 +39,6 @@ public class UriMatcher extends android.content.UriMatcher {
 		addURI(Constants.AUTHORITY, "status/last", STATUS_LAST);
 		addURI(Constants.AUTHORITY, "status/before/*", STATUS_BEFORE);
 		addURI(Constants.AUTHORITY, "status/*", STATUS_ID);
+		addURI(Constants.AUTHORITY, "status/discussion/*", STATUS_DISCUSSION);
 	}
 }

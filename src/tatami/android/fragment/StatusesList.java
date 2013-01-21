@@ -1,10 +1,12 @@
 package tatami.android.fragment;
 
+import tatami.android.DetailsActivity;
 import tatami.android.R;
-import tatami.android.widget.StatusObserver;
+import tatami.android.content.UriBuilder;
 import tatami.android.widget.StatusesAdapter;
+import tatami.android.widget.StatusesObserver;
+import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -29,7 +32,7 @@ public class StatusesList extends ListFragment implements
 
 	private StatusesAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
-	private StatusObserver observer = null;
+	private StatusesObserver observer = null;
 
 	public StatusesAdapter getStatusesAdapter() {
 		return statusesAdapter;
@@ -46,8 +49,18 @@ public class StatusesList extends ListFragment implements
 		if (pullToRefreshListView.isRefreshing()) {
 			pullToRefreshListView.onRefreshComplete();
 		}
+
+		getLoaderManager().restartLoader(StatusesList.class.hashCode(), null,
+				this);
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
 		
-		getLoaderManager().restartLoader(StatusesList.class.hashCode(), null, this);
+		Intent intent = new Intent(this.getActivity().getApplicationContext(), DetailsActivity.class);
+		intent.putExtra("STATUSKEY", id);
+		startActivity(intent);
 	}
 
 	@Override
@@ -61,17 +74,16 @@ public class StatusesList extends ListFragment implements
 
 		this.pullToRefreshListView = (PullToRefreshListView) view
 				.findViewById(R.id.status_list_view);
-		
 
-		observer = new StatusObserver(this);
+		observer = new StatusesObserver(this);
 		this.pullToRefreshListView.setOnRefreshListener(observer);
 
 		getActivity().getContentResolver().registerContentObserver(
-				Uri.parse("content://tatami.android.provider/status/"), false,
-				observer);
+				UriBuilder.getFullUri(), false, observer);
 
 		getLoaderManager()
 				.initLoader(StatusesList.class.hashCode(), null, this);
+
 		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
 
@@ -81,8 +93,7 @@ public class StatusesList extends ListFragment implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "Loading cursor");
-		return new CursorLoader(getActivity(),
-				Uri.parse("content://tatami.android.provider/status/"), null,
+		return new CursorLoader(getActivity(), UriBuilder.getFullUri(), null,
 				null, null, null);
 	}
 

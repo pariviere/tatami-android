@@ -1,6 +1,7 @@
 package tatami.android.widget;
 
 import tatami.android.R;
+import tatami.android.content.UriBuilder;
 import tatami.android.fragment.StatusesList;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
@@ -18,13 +19,13 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class StatusObserver extends ContentObserver implements
+public class StatusesObserver extends ContentObserver implements
 		OnRefreshListener2<ListView> {
-	private final static String TAG = StatusObserver.class.getSimpleName();
+	private final static String TAG = StatusesObserver.class.getSimpleName();
 
 	private StatusesList activity;
 
-	public StatusObserver(StatusesList activity) {
+	public StatusesObserver(StatusesList activity) {
 		super(null);
 		this.activity = activity;
 	}
@@ -44,22 +45,7 @@ public class StatusObserver extends ContentObserver implements
 
 	@Override
 	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-		// Log.d(TAG, "onPullDownToRefresh");
-		//
-		// PullToRefreshListView listView = (PullToRefreshListView) refreshView
-		// .findViewById(R.id.status_list_view);
-		//
-		// listView.setLastUpdatedLabel(DateUtils.formatDateTime(
-		// activity.getActivity(), System.currentTimeMillis(),
-		// DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-		// | DateUtils.FORMAT_ABBREV_ALL));
-		//
-		// Intent intent = new Intent(activity.getActivity(),
-		// TriggerSync.class);
-		//
-		// intent.putExtra("nothing", "");
-		//
-		// activity.getActivity().startService(intent);
+		// / not yet implement
 	}
 
 	@Override
@@ -82,11 +68,8 @@ public class StatusObserver extends ContentObserver implements
 
 		Log.d(TAG, "Last status primary key is  " + id);
 
-		Cursor cursor = activity
-				.getActivity()
-				.getContentResolver()
-				.query(Uri.parse("content://tatami.android.provider/status/"
-						+ id), null, null, null, null);
+		Cursor cursor = activity.getActivity().getContentResolver()
+				.query(UriBuilder.getStatusUri(id), null, null, null, null);
 
 		if (cursor.getCount() != 0) {
 			Status status = StatusFactory.fromCursorRow(cursor);
