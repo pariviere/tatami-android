@@ -35,8 +35,6 @@ import android.widget.Toast;
  */
 public class SignActivity extends AccountAuthenticatorActivity implements
 		LoginListener {
-	private static String PARAM_MAIL = "mail";
-	private static String PARAM_PASSWD = "passwd";
 	private static String TAG = SignActivity.class.getName();
 	private AccountManager accountManager;
 	private boolean newRequest;
@@ -56,7 +54,7 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 		// creation or edition.
 		// Extra information are passed by getStringExtra
 		final Intent intent = getIntent();
-		mail = intent.getStringExtra(PARAM_MAIL);
+		mail = intent.getStringExtra(Constants.PARAM_MAIL);
 
 		newRequest = mail == null;
 

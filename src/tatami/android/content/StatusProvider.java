@@ -77,7 +77,7 @@ public class StatusProvider extends ContentProvider {
 			return itemUri;
 
 		} catch (SQLException se) {
-			throw new android.database.SQLException("", se);
+			throw new android.database.SQLException(se.getMessage());
 		}
 
 	}
