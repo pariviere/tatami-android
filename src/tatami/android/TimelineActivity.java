@@ -26,7 +26,6 @@ public class TimelineActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_timeline, menu);
-		
 		return true;
 	}
 	

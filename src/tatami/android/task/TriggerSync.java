@@ -27,8 +27,8 @@ public class TriggerSync extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		AccountManager accountManager = AccountManager.get(this);
 
-		// / Tatami does not support multiaccount
-		// / so don't expect this alway works ;)
+		// Tatami does not support multiaccount
+		// so don't expect this to always works ;)
 		for (Account account : accountManager
 				.getAccountsByType(Constants.ACCOUNT_TYPE)) {
 			Log.i(TAG, "Ask synchronization for account " + account.name);

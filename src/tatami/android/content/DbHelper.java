@@ -2,6 +2,7 @@ package tatami.android.content;
 
 import java.sql.SQLException;
 
+import tatami.android.model.Details;
 import tatami.android.model.Status;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,6 +17,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 	private final static String TAG = DbHelper.class.getSimpleName();
 
 	private Dao<Status, String> statusDao;
+	private Dao<Details, String> detailsDao;
 
 	public DbHelper(Context context) {
 		super(context, DbMeta.DB_NAME, null, DbMeta.DB_VERSION);
@@ -25,6 +27,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
 			TableUtils.createTable(connectionSource, Status.class);
+			TableUtils.createTable(connectionSource, Details.class);
 		} catch (SQLException se) {
 			Log.e(TAG, "Unable to create database.", se);
 		}
@@ -40,6 +43,15 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	public Dao<Details, String> getDetailsDao() throws SQLException {
+		
+		if (detailsDao == null) {
+			detailsDao = getDao(Details.class);
+		}
+
+		return detailsDao;
+	}
+
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
 			int oldVersion, int newVersion) {
@@ -50,7 +62,6 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 		} else {
 			Log.d(TAG, "Database need to be upgraded to " + newVersion);
 		}
-
 	}
 
 }

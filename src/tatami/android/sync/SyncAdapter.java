@@ -7,6 +7,7 @@ import tatami.android.Client;
 import tatami.android.R;
 import tatami.android.TimelineActivity;
 import tatami.android.content.UriBuilder;
+import tatami.android.model.Details;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.accounts.Account;
@@ -53,7 +54,71 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		String login = account.name;
 		String passwd = AccountManager.get(super.getContext()).getPassword(
 				account);
+		
+		Log.d(TAG, "Launch authentication with " + login + ":" + passwd);
+		boolean authenticate;
+		try {
+			authenticate = Client.getInstance().authenticate(login,
+					passwd);
+			Log.d(TAG, "Authenticate = " + authenticate);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+
+		int syncType = SyncMeta.TYPE_TIMELINE;
+
+		if (extras.containsKey(SyncMeta.TYPE)) {
+			syncType = extras.getInt(SyncMeta.TYPE);
+		}
+
+		switch (syncType) {
+		case SyncMeta.TYPE_DETAILS:
+			try {
+				doSyncDetails(extras, provider, login, passwd);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+		default:
+			try {
+				doSyncTimeline(extras, provider, login, passwd);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		}
+	}
+	
+	private void doSyncDetails(Bundle extras, ContentProviderClient provider,
+			String login, String passwd) throws Exception {
+		
+		if (!extras.containsKey(SyncMeta.STATUS_ID)) 
+			return;
+		
+		// let's find discussion which refers to currentStatusId
+		String currentStatusId = extras.getString(SyncMeta.STATUS_ID);
+		
+		List<Status> statuses = Client.getInstance().getDiscussion(currentStatusId);
+
+		Uri fullUri = UriBuilder.getFullUri();
+		Uri detailsUri = UriBuilder.getDetailsUri(currentStatusId);
+
+		for (Status status : statuses) {
+				ContentValues statusValues = StatusFactory.to(status);
+				provider.insert(fullUri, statusValues);
+				
+				ContentValues detailsValues = new ContentValues();
+				detailsValues.put("detailsId", currentStatusId);
+				detailsValues.put("statusId", status.getStatusId());
+				provider.insert(detailsUri, detailsValues);
+		}
+	}
+
+	private void doSyncTimeline(Bundle extras, ContentProviderClient provider,
+			String login, String passwd) throws Exception {
 		Uri fullUri = UriBuilder.getFullUri();
 
 		try {
@@ -77,12 +142,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				}
 			}
 
-			Log.d(TAG, "Launch authentication with " + login + ":" + passwd);
-			boolean authenticate = Client.getInstance().authenticate(login,
-					passwd);
-
-			Log.d(TAG, "Authenticate = " + authenticate);
-
 			List<Status> statuses = Client.getInstance().getTimeline(
 					queryParams);
 
@@ -103,7 +162,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			ex.printStackTrace();
 			Log.e(TAG, ex.getMessage(), ex);
 		}
-
 	}
 
 	protected void notifyNewStatus(List<Status> statuses) {
@@ -111,7 +169,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Log.d(TAG, "Send notification to user");
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
 					this.getContext()).setSmallIcon(R.drawable.ic_launcher)
-					.setContentTitle("Tatami").setContentText(statuses.size() + " new statuses!")
+					.setContentTitle("Tatami")
+					.setContentText(statuses.size() + " new statuses!")
 					.setNumber(statuses.size()).setAutoCancel(true);
 
 			Intent resultIntent = new Intent(this.getContext(),

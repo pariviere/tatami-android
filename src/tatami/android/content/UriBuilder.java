@@ -29,4 +29,9 @@ public class UriBuilder {
 		String uri = String.format("content://%s/status/last", Constants.AUTHORITY);
 		return Uri.parse(uri);
 	}
+	
+	public static Uri getDetailsUri(String statusId) {
+		String uri = String.format("content://%s/status/details/%s", Constants.AUTHORITY, statusId);
+		return Uri.parse(uri);
+	}
 }

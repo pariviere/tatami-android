@@ -106,5 +106,4 @@ public class StatusesList extends ListFragment implements
 	public void onLoaderReset(Loader<Cursor> loader) {
 		statusesAdapter.swapCursor(null);
 	}
-
 }

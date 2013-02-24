@@ -1,8 +1,11 @@
 package tatami.android.content;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import tatami.android.Constants;
+import tatami.android.model.Details;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.content.ContentProvider;
@@ -35,6 +38,7 @@ public class StatusProvider extends ContentProvider {
 
 	private DbHelper dbHelper;
 	private Dao<Status, String> dao;
+	private Dao<Details, String> detailsDao;
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -48,10 +52,50 @@ public class StatusProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		if (uriMatcher.match(uri) != UriMatcher.STATUSES) {
+
+		Uri newUri;
+		switch (uriMatcher.match(uri)) {
+		case UriMatcher.STATUSES:
+			newUri = insertStatus(uri, values);
+			break;
+		case UriMatcher.STATUS_DETAILS:
+			newUri = insertDetails(uri, values);
+			break;
+		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
-		
+
+		return newUri;
+	}
+
+	private Uri insertDetails(Uri uri, ContentValues values) {
+		QueryBuilder<Details, String> queryBuilder = detailsDao.queryBuilder();
+
+		String detailsId = values.getAsString("detailsId");
+		String statusId = values.getAsString("statusId");
+
+		try {
+			queryBuilder.where().eq("detailsId", detailsId).and()
+					.eq("statusId", statusId);
+
+			if (queryBuilder.query().isEmpty()) {
+				Details details = new Details();
+
+				Log.d(TAG, "Create new details for statusId : " + detailsId);
+				details.setDetailsId(detailsId);
+				details.setStatusId(statusId);
+
+				detailsDao.create(details);
+				
+				getContext().getContentResolver().notifyChange(uri, null);
+			}
+			return UriBuilder.getDetailsUri(statusId);
+		} catch (SQLException se) {
+			throw new android.database.SQLException(se.getMessage());
+		}
+	}
+
+	private Uri insertStatus(Uri uri, ContentValues values) {
 		Status newStatus = StatusFactory.from(values);
 
 		try {
@@ -64,7 +108,7 @@ public class StatusProvider extends ContentProvider {
 
 			Uri itemUri = builder.build();
 
-			if (dao.queryForId(newStatus.getStatusId()) == null) {
+			if (dao.queryForEq("statusId", newStatus.getStatusId()).isEmpty()) {
 				dao.create(newStatus);
 
 				Log.d(TAG, "New record. URI is " + itemUri.toString());
@@ -79,7 +123,6 @@ public class StatusProvider extends ContentProvider {
 		} catch (SQLException se) {
 			throw new android.database.SQLException(se.getMessage());
 		}
-
 	}
 
 	@Override
@@ -92,6 +135,13 @@ public class StatusProvider extends ContentProvider {
 			dao = dbHelper.getStatusDao();
 		} catch (SQLException se) {
 			Log.e(TAG, "Can not initialize StatusProvider", se);
+			return false;
+		}
+
+		try {
+			detailsDao = dbHelper.getDetailsDao();
+		} catch (SQLException se) {
+			Log.e(TAG, "Can not initialize Details DAO", se);
 			return false;
 		}
 
@@ -112,26 +162,41 @@ public class StatusProvider extends ContentProvider {
 				Status last = dao.queryForId(lastStatusId);
 
 				if (last != null) {
-					Log.d(TAG, "Where statusDate <= " + last.getStatusDate().getTime());
+					Log.d(TAG, "Where statusDate <= "
+							+ last.getStatusDate().getTime());
 					queryBuilder.where().le("statusDate", last.getStatusDate());
 				}
-				
+
 				break;
-				
+
 			case UriMatcher.STATUS_LAST:
 				queryBuilder.limit(Long.valueOf("1"));
 				break;
-				
+
 			case UriMatcher.STATUS_ID:
 				String statusId = uri.getLastPathSegment();
 				Log.d(TAG, "Fetch by status id  : " + statusId);
 				queryBuilder.where().eq("statusId", statusId);
 				break;
-				
+
 			case UriMatcher.STATUS_KEY:
 				String primaryKey = uri.getLastPathSegment();
 				Log.d(TAG, "Fetch by primary key : " + primaryKey);
 				queryBuilder.where().idEq(primaryKey);
+				break;
+
+			case UriMatcher.STATUS_DETAILS:
+				String detailsId = uri.getLastPathSegment();
+
+				List<Details> detailsList = detailsDao.queryForEq("detailsId",
+						detailsId);
+
+				List<String> ids = new ArrayList<String>();
+				for (Details details : detailsList) {
+					ids.add(details.getStatusId());
+				}
+
+				queryBuilder.where().in("statusId", ids);
 				break;
 			}
 
@@ -140,7 +205,7 @@ public class StatusProvider extends ContentProvider {
 					.prepare());
 			AndroidDatabaseResults results = (AndroidDatabaseResults) iterator
 					.getRawResults();
-			
+
 			return results.getRawCursor();
 		} catch (SQLException e) {
 			Log.e(TAG, "Can not execute query", e);
