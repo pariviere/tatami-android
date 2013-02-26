@@ -6,25 +6,35 @@ import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.cert.CertificateException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.github.rjeschke.txtmark.Processor;
-
 import tatami.android.model.Status;
 
+import com.github.rjeschke.txtmark.Processor;
+
 /**
+ * <p>
+ * A simple to use Java client for Tatami REST API.
+ * </p>
  * 
  * @author pariviere
  */
 public class Client {
-
 	private static Client _client;
 
 	public static Client getInstance() {
@@ -50,6 +60,41 @@ public class Client {
 	}
 
 	/**
+	 * <p>
+	 * Factory method for {@link HttpURLConnection} instantiation. It disable
+	 * SSL certs checking in case of HTTPS scheme.
+	 * </p>
+	 * 
+	 * @see Client#certAlwaysTrust
+	 * @see Client#hostAlwaysValid
+	 * 
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	protected HttpURLConnection getHttpURLConnection(URL url) throws Exception {
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+		if (connection instanceof HttpsURLConnection) {
+			// Install the all-trusting trust manager
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(null, certAlwaysTrust,
+					new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sslContext
+					.getSocketFactory());
+
+			// Install the all-trusting host verifier
+			HttpsURLConnection.setDefaultHostnameVerifier(hostAlwaysValid);
+		}
+		
+		connection.setConnectTimeout(30000);
+		connection.setReadTimeout(30000);
+
+		return connection;
+	}
+
+	/**
 	 * 
 	 * @param login
 	 * @param passwd
@@ -67,8 +112,7 @@ public class Client {
 		URL auth = new URL(ClientURL.AUTH);
 
 		HttpURLConnection.setFollowRedirects(false);
-		HttpURLConnection authConnection = (HttpURLConnection) auth
-				.openConnection();
+		HttpURLConnection authConnection = getHttpURLConnection(auth);
 
 		try {
 			authConnection.setDoOutput(true);
@@ -111,15 +155,14 @@ public class Client {
 
 		URL discussion = new URL(String.format(ClientURL.DISCUSSION, statusId));
 		HttpURLConnection.setFollowRedirects(false);
-		HttpURLConnection discussionConnection = (HttpURLConnection) discussion
-				.openConnection();
+		HttpURLConnection discussionConnection = getHttpURLConnection(discussion);
 
 		discussionConnection.addRequestProperty("Accept", "application/json");
-		
+
 		try {
 			String detailsContent = IOUtils.toString(discussionConnection
 					.getInputStream());
-			
+
 			JSONObject jsonObj = new JSONObject(detailsContent);
 			JSONArray jsonArray = jsonObj.getJSONArray("discussionStatuses");
 
@@ -149,8 +192,7 @@ public class Client {
 		URL timeline = new URL(ClientURL.TIMELINE + builder.toString());
 
 		HttpURLConnection.setFollowRedirects(false);
-		HttpURLConnection timelineConnection = (HttpURLConnection) timeline
-				.openConnection();
+		HttpURLConnection timelineConnection = getHttpURLConnection(timeline);
 
 		timelineConnection.addRequestProperty("Accept", "application/json");
 
@@ -178,8 +220,7 @@ public class Client {
 		URL home = new URL(ClientURL.ROOT);
 
 		HttpURLConnection.setFollowRedirects(false);
-		HttpURLConnection homeConnection = (HttpURLConnection) home
-				.openConnection();
+		HttpURLConnection homeConnection = getHttpURLConnection(home);
 		homeConnection.addRequestProperty("Accept", "text/html");
 
 		try {
@@ -223,4 +264,45 @@ public class Client {
 
 		return statuses;
 	}
+
+	/**
+	 * <p>
+	 * Implementation of {@link HostnameVerifier} which always approve remote
+	 * hostname.
+	 * </p>
+	 */
+	private HostnameVerifier hostAlwaysValid = new HostnameVerifier() {
+		public boolean verify(String hostname, SSLSession session) {
+			return true;
+		}
+	};
+
+	
+	/**
+	 * <p>
+	 * Implementation of {@link X509TrustManager} which disable any kind of
+	 * checking.
+	 * </p>
+	 */
+	private TrustManager[] certAlwaysTrust = new TrustManager[] { new X509TrustManager() {
+
+		@Override
+		public void checkClientTrusted(
+				java.security.cert.X509Certificate[] chain, String authType)
+				throws CertificateException {
+
+		}
+
+		@Override
+		public void checkServerTrusted(
+				java.security.cert.X509Certificate[] chain, String authType)
+				throws CertificateException {
+
+		}
+
+		@Override
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+	} };
 }
