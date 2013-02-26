@@ -20,13 +20,12 @@ import android.net.NetworkInfo;
  * @author pariviere
  */
 public class TatamiApp extends android.app.Application {
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		doScheduleTask();
 	}
-
+	
 	/**
 	 * <p>
 	 * Schedule {@link TriggerSync}
