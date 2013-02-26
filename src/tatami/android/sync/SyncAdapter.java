@@ -7,7 +7,6 @@ import tatami.android.Client;
 import tatami.android.R;
 import tatami.android.TimelineActivity;
 import tatami.android.content.UriBuilder;
-import tatami.android.model.Details;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.accounts.Account;
@@ -41,8 +40,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	public SyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
-
-		Log.d(TAG, "SyncAdapter constructor");
 	}
 
 	@Override

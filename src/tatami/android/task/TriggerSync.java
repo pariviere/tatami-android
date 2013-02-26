@@ -1,6 +1,7 @@
 package tatami.android.task;
 
 import tatami.android.Constants;
+import tatami.android.TatamiApp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.IntentService;
@@ -25,6 +26,13 @@ public class TriggerSync extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		TatamiApp app = (TatamiApp) getApplication();
+
+		if (!app.isConnected()) {
+			Log.i(TAG, "No connectivity found. Cancel synchronization");
+			return;
+		}
+
 		AccountManager accountManager = AccountManager.get(this);
 
 		// Tatami does not support multiaccount
