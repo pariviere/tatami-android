@@ -87,7 +87,7 @@ public class Client {
 			// Install the all-trusting host verifier
 			HttpsURLConnection.setDefaultHostnameVerifier(hostAlwaysValid);
 		}
-		
+
 		connection.setConnectTimeout(30000);
 		connection.setReadTimeout(30000);
 
@@ -150,10 +150,10 @@ public class Client {
 		}
 	}
 
-	public List<Status> getDiscussion(String statusId) throws Exception {
+	public List<Status> getDetails(String statusId) throws Exception {
 		doAuthenticateIfNecessary();
 
-		URL discussion = new URL(String.format(ClientURL.DISCUSSION, statusId));
+		URL discussion = new URL(String.format(ClientURL.DETAILS, statusId));
 		HttpURLConnection.setFollowRedirects(false);
 		HttpURLConnection discussionConnection = getHttpURLConnection(discussion);
 
@@ -172,6 +172,46 @@ public class Client {
 		} finally {
 			discussionConnection.disconnect();
 		}
+	}
+
+	public boolean update(Status status) throws Exception {
+		doAuthenticateIfNecessary();
+
+		URL update = new URL(ClientURL.UPDATE);
+		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection updateConnection = getHttpURLConnection(update);
+
+		updateConnection.addRequestProperty("Content-Type", "application/json");
+		updateConnection.addRequestProperty("Accept",
+				"application/json, text/javascript");
+
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put("content", status.getContent());
+		jsonObject.put("groupId", "");
+
+		String json = jsonObject.toString();
+
+		try {
+			updateConnection.setDoOutput(true);
+			updateConnection
+					.setFixedLengthStreamingMode(json.getBytes().length);
+
+			IOUtils.write(json, updateConnection.getOutputStream());
+
+			if (updateConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		} finally {
+
+			updateConnection.disconnect();
+		}
+
 	}
 
 	public List<Status> getTimeline(SimpleEntry<String, String>... params)
@@ -277,7 +317,6 @@ public class Client {
 		}
 	};
 
-	
 	/**
 	 * <p>
 	 * Implementation of {@link X509TrustManager} which disable any kind of

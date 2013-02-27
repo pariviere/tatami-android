@@ -98,7 +98,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		// let's find discussion which refers to currentStatusId
 		String currentStatusId = extras.getString(SyncMeta.STATUS_ID);
 		
-		List<Status> statuses = Client.getInstance().getDiscussion(currentStatusId);
+		List<Status> statuses = Client.getInstance().getDetails(currentStatusId);
 
 		Uri fullUri = UriBuilder.getFullUri();
 		Uri detailsUri = UriBuilder.getDetailsUri(currentStatusId);
