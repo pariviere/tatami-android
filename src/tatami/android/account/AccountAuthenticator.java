@@ -1,5 +1,6 @@
 package tatami.android.account;
 
+import tatami.android.Constants;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -27,10 +28,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 			String[] requiredFeatures, Bundle options)
 			throws NetworkErrorException {
 
-		/// will be called by Android when adding a Tatami account
-		/// in device preferences
-		
-		
+		// / will be called by Android when adding a Tatami account
+		// / in device preferences
 		final Intent intent = new Intent(context, SignActivity.class);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
 				response);
@@ -70,9 +69,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 	@Override
 	public Bundle hasFeatures(AccountAuthenticatorResponse response,
 			Account account, String[] features) throws NetworkErrorException {
-        final Bundle result = new Bundle();
-        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
-        return result;
+		final Bundle result = new Bundle();
+		result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+		return result;
 	}
 
 	@Override
