@@ -66,6 +66,18 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 		mailEditText = (EditText) findViewById(R.id.mailEditText);
 		passwdEditText = (EditText) findViewById(R.id.passwdEditText);
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+		
+		if (accounts != null && accounts.length == 1) {
+			Toast.makeText(this, "Tatami Android supports only one account. Abort", Toast.LENGTH_LONG).show();
+			finish();
+		}
+	}
 
 	/**
 	 * <p>
@@ -110,7 +122,7 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 
 	@Override
 	public void onLoginSucceed() {
-		Log.d(TAG, "Login succeed :  save account information");
+		Log.d(TAG, String.format("Login succeed for %s : saving account information", this.mail));
 
 		final Account account = new Account(this.mail, Constants.ACCOUNT_TYPE);
 
