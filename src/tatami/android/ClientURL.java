@@ -7,4 +7,5 @@ public class ClientURL {
 	public static String TIMELINE	= "https://tatami.ippon.fr/tatami/rest/statuses/home_timeline";
 	public static String DETAILS	= "https://tatami.ippon.fr/tatami/rest/statuses/details/%s";
 	public static String UPDATE		= "https://tatami.ippon.fr/tatami/rest/statuses/update";
+	public static String DISCUSSION	= "https://tatami.ippon.fr/tatami/rest/statuses/discussion";
 }

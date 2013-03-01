@@ -174,6 +174,46 @@ public class Client {
 		}
 	}
 
+	public boolean discussion(Status status, String statusId) throws Exception {
+		doAuthenticateIfNecessary();
+
+		URL discussion = new URL(ClientURL.DISCUSSION);
+		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection discussionConnection = getHttpURLConnection(discussion);
+
+		discussionConnection.addRequestProperty("Content-Type",
+				"application/json");
+		discussionConnection.addRequestProperty("Accept",
+				"application/json, text/javascript");
+
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put("content", status.getContent());
+		jsonObject.put("statusId", statusId);
+
+		String json = jsonObject.toString();
+
+		try {
+			discussionConnection.setDoOutput(true);
+			discussionConnection
+					.setFixedLengthStreamingMode(json.getBytes().length);
+
+			IOUtils.write(json, discussionConnection.getOutputStream());
+
+			if (discussionConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		} finally {
+
+			discussionConnection.disconnect();
+		}
+	}
+
 	public boolean update(Status status) throws Exception {
 		doAuthenticateIfNecessary();
 
@@ -211,7 +251,6 @@ public class Client {
 
 			updateConnection.disconnect();
 		}
-
 	}
 
 	public List<Status> getTimeline(SimpleEntry<String, String>... params)

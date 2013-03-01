@@ -21,10 +21,13 @@ import android.os.AsyncTask;
 public class SendUpdate extends AsyncTask<Status, Integer, Boolean> {
 	private UpdateListener updateListener;
 	private Context context;
+	private String statusId;
 
-	public SendUpdate(Context context, UpdateListener updateListener) {
+	public SendUpdate(Context context, UpdateListener updateListener,
+			String statusId) {
 		this.context = context;
 		this.updateListener = updateListener;
+		this.statusId = statusId;
 
 	}
 
@@ -44,7 +47,12 @@ public class SendUpdate extends AsyncTask<Status, Integer, Boolean> {
 			for (tatami.android.model.Status status : params) {
 				try {
 					Client.getInstance().authenticate(login, passwd);
-					Client.getInstance().update(status);
+
+					if (statusId != null) {
+						Client.getInstance().discussion(status, statusId);
+					} else {
+						Client.getInstance().update(status);
+					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					return false;
