@@ -26,13 +26,6 @@ public class TriggerSync extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		TatamiApp app = (TatamiApp) getApplication();
-
-		if (!app.isConnected()) {
-			Log.i(TAG, "No connectivity found. Cancel synchronization");
-			return;
-		}
-
 		AccountManager accountManager = AccountManager.get(this);
 
 		// Tatami does not support multiaccount

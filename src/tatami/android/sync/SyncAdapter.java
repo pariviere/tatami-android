@@ -33,6 +33,10 @@ import android.util.Log;
  * bring synchronization to Tatami.
  * </p>
  * 
+ * <p>
+ * NOTE : no need to test if network is available. Android handles it for us.
+ * </p>
+ * 
  * @author pariviere
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
@@ -73,7 +77,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		} else {
 			Log.d(TAG,
 					"Authentication succeed with Tatami server. Launch sync.");
-			
+
 			int syncType = SyncMeta.TYPE_TIMELINE;
 
 			if (extras.containsKey(SyncMeta.TYPE)) {
@@ -103,7 +107,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					syncResult.stats.numIoExceptions++;
 				}
 				break;
-			}			
+			}
 		}
 	}
 
@@ -137,7 +141,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		for (Status status : statuses) {
 			ContentValues statusValues = StatusFactory.to(status);
 			provider.insert(fullUri, statusValues);
-			
+
 			syncResult.stats.numEntries++;
 			syncResult.stats.numInserts++;
 
@@ -145,7 +149,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			detailsValues.put("detailsId", currentStatusId);
 			detailsValues.put("statusId", status.getStatusId());
 			provider.insert(detailsUri, detailsValues);
-			
+
 			syncResult.stats.numInserts++;
 		}
 	}
