@@ -16,27 +16,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import tatami.android.R;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.widget.ImageView;
 
-
-/**
- * 
- * @see https://github.com/thest1/LazyList
- */
 public class ImageLoader {
     
     MemoryCache memoryCache=new MemoryCache();
     FileCache fileCache;
     private Map<ImageView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    ExecutorService executorService; 
+    ExecutorService executorService;
+    Handler handler=new Handler();//handler to display images in UI thread
     
     public ImageLoader(Context context){
         fileCache=new FileCache(context);
-        executorService=Executors.newFixedThreadPool(1);
+        executorService=Executors.newFixedThreadPool(5);
     }
     
     final int stub_id=R.drawable.ic_mm;
@@ -80,6 +76,7 @@ public class ImageLoader {
             OutputStream os = new FileOutputStream(f);
             Utils.CopyStream(is, os);
             os.close();
+            conn.disconnect();
             bitmap = decodeFile(f);
             return bitmap;
         } catch (Throwable ex){
@@ -154,8 +151,7 @@ public class ImageLoader {
                 if(imageViewReused(photoToLoad))
                     return;
                 BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
-                Activity a=(Activity)photoToLoad.imageView.getContext();
-                a.runOnUiThread(bd);
+                handler.post(bd);
             }catch(Throwable th){
                 th.printStackTrace();
             }

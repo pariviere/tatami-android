@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * <p>
- * {@link Details} object creates 1 status and N statuses
+ * {@link Details} object creates a one-to-many relationship between statuses.
  * </p>
  * 
  * @author pariviere
@@ -20,19 +20,19 @@ public class Details {
 
 	@DatabaseField(canBeNull = false, index = true)
 	private String statusId;
-	
+
 	public void setDetailsId(String detailsId) {
 		this.detailsId = detailsId;
 	}
-	
+
 	public String getDetailsId() {
 		return detailsId;
 	}
-	
+
 	public void setStatusId(String statusId) {
 		this.statusId = statusId;
 	}
-	
+
 	public String getStatusId() {
 		return statusId;
 	}

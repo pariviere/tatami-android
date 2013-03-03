@@ -25,7 +25,7 @@ public class TatamiApp extends android.app.Application {
 		super.onCreate();
 		doScheduleTask();
 	}
-	
+
 	/**
 	 * <p>
 	 * Schedule {@link TriggerSync}
@@ -57,7 +57,10 @@ public class TatamiApp extends android.app.Application {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-		boolean isConnected = activeNetwork.isConnectedOrConnecting();
+		boolean isConnected = false;
+		if (activeNetwork != null) {
+			isConnected = activeNetwork.isConnectedOrConnecting();
+		}
 
 		return isConnected;
 	}

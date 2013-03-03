@@ -24,6 +24,10 @@ import android.view.ViewGroup;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+
+/**
+ * @author pariviere
+ */
 public class DetailsStatus extends ListFragment implements
 		LoaderCallbacks<Cursor> {
 	private final static String TAG = DetailsStatus.class.getSimpleName();

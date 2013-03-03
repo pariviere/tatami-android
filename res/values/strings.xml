@@ -12,6 +12,6 @@
     <string name="access_denied">Access Denied</string>
     <string name="password">Password</string>
     <string name="menu_new">Compose status</string>
-    <string name="title_activity_details">DetailsActivity</string>
+    <string name="title_activity_details">Conversation</string>
 
 </resources>

@@ -2,7 +2,6 @@ package tatami.android.model;
 
 import java.util.Date;
 
-import com.github.rjeschke.txtmark.Processor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

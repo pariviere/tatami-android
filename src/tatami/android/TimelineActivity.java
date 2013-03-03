@@ -20,6 +20,7 @@ public class TimelineActivity extends FragmentActivity {
 	protected void onCreate(Bundle bundle) {
 		Log.d(TAG, "Start timeline...");
 		super.onCreate(bundle);
+		this.setTitle(R.string.title_activity_timeline);
 		setContentView(R.layout.activity_timeline);
 	}
 
