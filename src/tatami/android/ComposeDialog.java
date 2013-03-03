@@ -83,8 +83,10 @@ public class ComposeDialog extends DialogFragment {
 		});
 
 		builder.setView(view)
-				.setPositiveButton("Post!",
-						new SuccessDialogListener(this.getActivity(), selectedStatusId))
+				.setPositiveButton(
+						"Post!",
+						new SuccessDialogListener(this.getActivity(),
+								selectedStatusId))
 				.setNegativeButton("Cancel",
 						new DialogInterface.OnClickListener() {
 
@@ -124,6 +126,8 @@ public class ComposeDialog extends DialogFragment {
 		public void onClick(DialogInterface dialog, int which) {
 
 			if (!app.isConnected()) {
+				Toast.makeText(activity, "No network : can not post",
+						Toast.LENGTH_LONG).show();
 				return;
 			}
 
@@ -131,7 +135,8 @@ public class ComposeDialog extends DialogFragment {
 				Status status = new Status();
 				status.setContent(composeEdit.getText().toString());
 
-				SendUpdate sendUpdate = new SendUpdate(activity, this, selectedStatusId);
+				SendUpdate sendUpdate = new SendUpdate(activity, this,
+						selectedStatusId);
 				sendUpdate.execute(status);
 			}
 		}
