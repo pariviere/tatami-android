@@ -1,5 +1,6 @@
 package tatami.android.fragment;
 
+import tatami.android.Constants;
 import tatami.android.DetailsActivity;
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
@@ -59,7 +60,7 @@ public class StatusesList extends ListFragment implements
 		super.onListItemClick(l, v, position, id);
 		
 		Intent intent = new Intent(this.getActivity().getApplicationContext(), DetailsActivity.class);
-		intent.putExtra("STATUSKEY", id);
+		intent.putExtra(Constants.STATUS_PARAM, id);
 		startActivity(intent);
 	}
 

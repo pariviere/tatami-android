@@ -22,7 +22,7 @@ public class DetailsActivity extends FragmentActivity {
 		setContentView(R.layout.activity_details);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		long id = this.getIntent().getLongExtra("STATUSKEY", 0);
+		long id = this.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 
 		Cursor cursor = this.getContentResolver().query(
 				UriBuilder.getStatusUri(id), null, null, null, null);
@@ -51,7 +51,7 @@ public class DetailsActivity extends FragmentActivity {
 		case R.id.menu_compose:
 			ComposeDialog dialog = new ComposeDialog();
 			Bundle args = new Bundle();
-			args.putString("STATUSKEY", this.currentStatus.getStatusId());
+			args.putString(Constants.STATUS_PARAM, this.currentStatus.getStatusId());
 			dialog.setArguments(args);
 			dialog.show(getSupportFragmentManager(), "DetailsActivity");
 			return true;

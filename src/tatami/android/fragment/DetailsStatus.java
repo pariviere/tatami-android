@@ -1,5 +1,6 @@
 package tatami.android.fragment;
 
+import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
@@ -65,7 +66,7 @@ public class DetailsStatus extends ListFragment implements
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
 
 		Activity activity = this.getActivity();
-		long id = activity.getIntent().getLongExtra("STATUSKEY", 0);
+		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 
 		Intent intent = new Intent(activity, TriggerSync.class);
 

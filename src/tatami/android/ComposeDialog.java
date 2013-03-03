@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 /**
  * <p>
- * Prompt user for writing is new status
+ * Prompt user for writing new status
  * </p>
  * 
  * @author pariviere
@@ -47,7 +47,7 @@ public class ComposeDialog extends DialogFragment {
 
 		// if arguments => statusId selected
 		if (getArguments() != null) {
-			selectedStatusId = getArguments().getString("STATUSKEY");
+			selectedStatusId = getArguments().getString(Constants.STATUS_PARAM);
 			if (selectedStatusId != null) {
 				Cursor cursor = getActivity().getContentResolver().query(
 						UriBuilder.getStatusUri(selectedStatusId), null, null,

@@ -1,14 +1,12 @@
 package tatami.android.fragment;
 
+import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
-import tatami.android.model.Status;
-import tatami.android.model.StatusFactory;
 import tatami.android.widget.StatusesAdapter;
 import tatami.android.widget.StatusesAdapter.ViewHolder;
 import android.app.Activity;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -39,7 +37,7 @@ public class ItemStatus extends Fragment {
 		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_layout);
 
 		Activity activity = this.getActivity();
-		long id = activity.getIntent().getLongExtra("STATUSKEY", 0);
+		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 
 		Log.d(TAG, "Selected status primary key is  " + id);
 
