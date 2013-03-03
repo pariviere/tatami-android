@@ -42,125 +42,177 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		super(context, autoInitialize);
 	}
 
+	/**
+	 * <p>
+	 * </p>
+	 */
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 
-		Log.d(TAG, "Launch synchronization for account " + account.name);
-
 		String login = account.name;
 		String passwd = AccountManager.get(super.getContext()).getPassword(
 				account);
-		
-		Log.d(TAG, "Launch authentication with " + login + ":" + passwd);
-		boolean authenticate;
+
+		Log.d(TAG, "Launch asked for " + login);
+		boolean authenticate = false;
 		try {
-			authenticate = Client.getInstance().authenticate(login,
-					passwd);
-			Log.d(TAG, "Authenticate = " + authenticate);
+			authenticate = Client.getInstance().authenticate(login, passwd);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, "Unable to handle authentication with Tatami server : "
+					+ e.getMessage(), e);
+			syncResult.stats.numAuthExceptions++;
+			return;
 		}
 
+		if (!authenticate) {
+			Log.d(TAG, String.format(
+					"Authentication for %s rejected by Tatami server", login));
+			syncResult.stats.numAuthExceptions++;
+			return;
+		} else {
+			Log.d(TAG,
+					"Authentication succeed with Tatami server. Launch sync.");
+			
+			int syncType = SyncMeta.TYPE_TIMELINE;
 
-		int syncType = SyncMeta.TYPE_TIMELINE;
-
-		if (extras.containsKey(SyncMeta.TYPE)) {
-			syncType = extras.getInt(SyncMeta.TYPE);
-		}
-
-		switch (syncType) {
-		case SyncMeta.TYPE_DETAILS:
-			try {
-				doSyncDetails(extras, provider, login, passwd);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if (extras.containsKey(SyncMeta.TYPE)) {
+				syncType = extras.getInt(SyncMeta.TYPE);
 			}
-			break;
-		default:
-			try {
-				doSyncTimeline(extras, provider, login, passwd);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+
+			switch (syncType) {
+			case SyncMeta.TYPE_DETAILS:
+				try {
+					Log.d(TAG, "Sync mode is syncDetails");
+					doSyncDetails(extras, provider, syncResult, login, passwd);
+				} catch (Exception ex) {
+					Log.e(TAG,
+							String.format("syncDetails have failed : %s",
+									ex.getMessage()), ex);
+					syncResult.stats.numIoExceptions++;
+				}
+				break;
+			default:
+				try {
+					Log.d(TAG, "Sync mode is syncTimeline");
+					doSyncTimeline(extras, provider, syncResult, login, passwd);
+				} catch (Exception ex) {
+					Log.e(TAG,
+							String.format("syncTimeline have failed : %s",
+									ex.getMessage()), ex);
+					syncResult.stats.numIoExceptions++;
+				}
+				break;
+			}			
 		}
 	}
-	
+
+	/**
+	 * <p>
+	 * Do syncDetails
+	 * </p>
+	 * 
+	 * @param extras
+	 * @param provider
+	 * @param login
+	 * @param passwd
+	 * @throws Exception
+	 */
 	private void doSyncDetails(Bundle extras, ContentProviderClient provider,
-			String login, String passwd) throws Exception {
-		
-		if (!extras.containsKey(SyncMeta.STATUS_ID)) 
+			SyncResult syncResult, String login, String passwd)
+			throws Exception {
+
+		if (!extras.containsKey(SyncMeta.STATUS_ID))
 			return;
-		
+
 		// let's find discussion which refers to currentStatusId
 		String currentStatusId = extras.getString(SyncMeta.STATUS_ID);
-		
-		List<Status> statuses = Client.getInstance().getDetails(currentStatusId);
+
+		List<Status> statuses = Client.getInstance()
+				.getDetails(currentStatusId);
 
 		Uri fullUri = UriBuilder.getFullUri();
 		Uri detailsUri = UriBuilder.getDetailsUri(currentStatusId);
 
 		for (Status status : statuses) {
-				ContentValues statusValues = StatusFactory.to(status);
-				provider.insert(fullUri, statusValues);
-				
-				ContentValues detailsValues = new ContentValues();
-				detailsValues.put("detailsId", currentStatusId);
-				detailsValues.put("statusId", status.getStatusId());
-				provider.insert(detailsUri, detailsValues);
+			ContentValues statusValues = StatusFactory.to(status);
+			provider.insert(fullUri, statusValues);
+			
+			syncResult.stats.numEntries++;
+			syncResult.stats.numInserts++;
+
+			ContentValues detailsValues = new ContentValues();
+			detailsValues.put("detailsId", currentStatusId);
+			detailsValues.put("statusId", status.getStatusId());
+			provider.insert(detailsUri, detailsValues);
+			
+			syncResult.stats.numInserts++;
 		}
 	}
 
+	/**
+	 * <p>
+	 * Do syncTimeline
+	 * </p>
+	 * 
+	 * @param extras
+	 * @param provider
+	 * @param login
+	 * @param passwd
+	 * @throws Exception
+	 */
 	private void doSyncTimeline(Bundle extras, ContentProviderClient provider,
-			String login, String passwd) throws Exception {
+			SyncResult syncResult, String login, String passwd)
+			throws Exception {
 		Uri fullUri = UriBuilder.getFullUri();
 
-		try {
-			SimpleEntry<String, String> queryParams = null;
+		SimpleEntry<String, String> queryParams = null;
 
-			boolean autosync = false;
+		// timeline is sync either by date (autosync)
+		// either against another status
+		boolean autosync = false;
 
-			if (extras.containsKey(SyncMeta.BEFORE_ID)) {
-				String beforeStatusId = extras.getString(SyncMeta.BEFORE_ID);
+		if (extras.containsKey(SyncMeta.BEFORE_ID)) {
+			String beforeStatusId = extras.getString(SyncMeta.BEFORE_ID);
 
-				queryParams = new SimpleEntry<String, String>("max_id",
-						beforeStatusId);
-			} else {
-				autosync = true;
+			queryParams = new SimpleEntry<String, String>("max_id",
+					beforeStatusId);
+		} else {
+			autosync = true;
 
-				Status last = queryLastStatus(provider);
+			Status last = queryLastStatus(provider);
 
-				if (last != null) {
-					queryParams = new SimpleEntry<String, String>("since_id",
-							last.getStatusId());
-				}
+			if (last != null) {
+				queryParams = new SimpleEntry<String, String>("since_id",
+						last.getStatusId());
 			}
-
-			List<Status> statuses = Client.getInstance().getTimeline(
-					queryParams);
-
-			Log.d(TAG, "Found " + statuses.size()
-					+ " statuses with queryParams = " + queryParams);
-
-			for (Status status : statuses) {
-				ContentValues statusValues = StatusFactory.to(status);
-
-				provider.insert(fullUri, statusValues);
-			}
-
-			if (autosync)
-				notifyNewStatus(statuses);
-		} catch (Exception ex) {
-			getContext().getContentResolver().notifyChange(fullUri, null);
-
-			ex.printStackTrace();
-			Log.e(TAG, ex.getMessage(), ex);
 		}
+
+		List<Status> statuses = Client.getInstance().getTimeline(queryParams);
+
+		Log.d(TAG, "Found " + statuses.size() + " statuses with queryParams = "
+				+ queryParams);
+
+		for (Status status : statuses) {
+			ContentValues statusValues = StatusFactory.to(status);
+
+			provider.insert(fullUri, statusValues);
+			syncResult.stats.numEntries++;
+			syncResult.stats.numInserts++;
+		}
+
+		// I don't want to be notified when
+		// sync request is issued by user
+		if (autosync)
+			notifyNewStatus(statuses);
 	}
 
+	/**
+	 * <p>
+	 * </p>
+	 * 
+	 * @param statuses
+	 */
 	protected void notifyNewStatus(List<Status> statuses) {
 		if (statuses.size() > 0) {
 			Log.d(TAG, "Send notification to user");
@@ -210,6 +262,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	}
 
+	/**
+	 * <p>
+	 * Return the last status
+	 * </p>
+	 * 
+	 * @param provider
+	 * @return
+	 * @throws RemoteException
+	 */
 	protected Status queryLastStatus(ContentProviderClient provider)
 			throws RemoteException {
 
