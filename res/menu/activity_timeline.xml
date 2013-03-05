@@ -4,5 +4,4 @@
         android:id="@+id/menu_compose"
         android:icon="@drawable/ic_menu_new"
         android:title="@string/menu_new" android:showAsAction="ifRoom" />
-
 </menu>

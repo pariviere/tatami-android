@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <RelativeLayout android:id="@+id/status_layout"
+    <RelativeLayout
+        android:id="@+id/status_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

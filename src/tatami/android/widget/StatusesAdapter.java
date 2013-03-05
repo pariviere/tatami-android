@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,19 +27,13 @@ import com.androidquery.callback.ImageOptions;
  * Own implementation of {@link ArrayAdapter} in order to handle {@link Status}.
  * </p>
  * 
- * <p>
- * Please use {@link StatusesAdapter}{@link #add(Status)} or
- * {@link StatusesAdapter}{@link #addAll(java.util.Collection)} in order to
- * populate {@link Status}.
- * </p>
  * 
- * 
- * TODO : move status view building from main thread
  * 
  * @author pariviere
  */
 public class StatusesAdapter extends CursorAdapter {
 	private HtmlSpanner htmlSpanner;
+	private ImageOptions imageOptions;
 
 	public static class ViewHolder {
 		public ImageView avatar;
@@ -49,7 +44,18 @@ public class StatusesAdapter extends CursorAdapter {
 	public StatusesAdapter(Context context, Cursor c) {
 		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		htmlSpanner = new HtmlSpanner();
-        AjaxCallback.setNetworkLimit(2);
+		initAquery();
+	}
+
+	protected void initAquery() {
+		AjaxCallback.setNetworkLimit(2);
+
+		imageOptions = new ImageOptions();
+		imageOptions.round = 15;
+		imageOptions.fileCache = true;
+		imageOptions.memCache = true;
+		imageOptions.targetWidth = 80;
+		imageOptions.fallback = R.drawable.ic_mm;
 	}
 
 	@Override
@@ -65,7 +71,7 @@ public class StatusesAdapter extends CursorAdapter {
 		viewHolder.info = (TextView) rowView.findViewById(R.id.info);
 
 		rowView.setTag(viewHolder);
-		
+
 		return rowView;
 	}
 
@@ -81,7 +87,6 @@ public class StatusesAdapter extends CursorAdapter {
 	}
 
 	public TextView buildInfoTextView(TextView infoTextView, Status status) {
-
 		infoTextView.setTextSize(12);
 
 		String html = status.getFirstName() + " " + status.getLastName();
@@ -97,24 +102,17 @@ public class StatusesAdapter extends CursorAdapter {
 
 		String url = "http://www.gravatar.com/avatar/" + gravatar
 				+ "?s=80&d=mm";
-		
-		AQuery aq = new AQuery(view);
-		
-		Bitmap preset = aq.getCachedImage(url);
 
-		ImageOptions options = new ImageOptions();
-		options.round = 15;
-		options.fileCache = true;
-		options.memCache = true;
-		options.preset = preset;
-		options.targetWidth = 80;
-		options.fallback = R.drawable.ic_mm;				
-		
-		aq.id(avatarImageView).image(url, options);
+		AQuery aq = new AQuery(view);
+
+		Bitmap preset = aq.getCachedImage(url);
+		imageOptions.preset = preset;
+
+		aq.id(avatarImageView).image(url, imageOptions);
 
 		return avatarImageView;
 	}
-	
+
 	public TextView buildStatusTextView(TextView statusTextView, Status status) {
 		statusTextView.setTextSize(14);
 
@@ -125,6 +123,8 @@ public class StatusesAdapter extends CursorAdapter {
 
 		UsernameDecorator.getInstance().decorate(ssb);
 		TagDecorator.getInstance().decorate(ssb);
+		URLDecorator.getInstance(mContext).decorate(ssb);
+		
 
 		statusTextView.setText(ssb, BufferType.SPANNABLE);
 

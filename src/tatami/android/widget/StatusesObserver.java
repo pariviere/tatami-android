@@ -88,7 +88,6 @@ public class StatusesObserver extends ContentObserver implements
 				activity.getActivity().startService(intent);
 			} else {
 				listView.onRefreshComplete();
-
 			}
 		}
 

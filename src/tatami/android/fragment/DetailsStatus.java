@@ -41,10 +41,6 @@ public class DetailsStatus extends ListFragment implements
 		return statusesAdapter;
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
 
 	@Override
 	public void onPause() {
@@ -53,6 +49,8 @@ public class DetailsStatus extends ListFragment implements
 				detailsObserver);
 	}
 
+	
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -60,7 +58,7 @@ public class DetailsStatus extends ListFragment implements
 		detailsObserver = new DetailsObserver(this);
 		Log.d(TAG, "Details list fragment loading...");
 
-		View view = inflater.inflate(R.layout.fragment_list_statuses,
+		View view = inflater.inflate(R.layout.fragment_details_status,
 				container, false);
 
 		this.pullToRefreshListView = (PullToRefreshListView) view

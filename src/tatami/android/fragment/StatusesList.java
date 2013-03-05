@@ -54,14 +54,35 @@ public class StatusesList extends ListFragment implements
 		getLoaderManager().restartLoader(StatusesList.class.hashCode(), null,
 				this);
 	}
-	
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
-		Intent intent = new Intent(this.getActivity().getApplicationContext(), DetailsActivity.class);
+
+		Intent intent = new Intent(this.getActivity().getApplicationContext(),
+				DetailsActivity.class);
 		intent.putExtra(Constants.STATUS_PARAM, id);
 		startActivity(intent);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		int position = pullToRefreshListView.getRefreshableView()
+				.getFirstVisiblePosition();
+
+		outState.putInt("position", position);
+	}
+
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+
+		if (savedInstanceState != null && savedInstanceState.containsKey("position")) {
+			int position = savedInstanceState.getInt("position");
+
+			pullToRefreshListView.getRefreshableView().setSelection(position);
+		}
 	}
 
 	@Override

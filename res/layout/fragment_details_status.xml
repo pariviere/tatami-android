@@ -9,11 +9,11 @@
         android:id="@+id/status_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="false"
-        ptr:ptrMode="pullUpFromBottom" 
         android:background="#EEE"
+        android:drawSelectorOnTop="false"
         android:showDividers="none"
-     />
-    
+        ptr:ptrMode="disabled" />
+
+
 
 </RelativeLayout>

@@ -32,7 +32,7 @@ public class UsernameDecorator implements SpannableDecorator {
 	 * \@username regex
 	 * </p>
 	 */
-	private static String regex = "@([A-Za-z0-9_]+)"; 
+	private static String regex = "\\B@([A-Za-z0-9_]+)"; 
 	
 	
 	private Pattern pattern;

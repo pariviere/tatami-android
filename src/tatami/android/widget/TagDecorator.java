@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 
 public class TagDecorator implements SpannableDecorator {
 
