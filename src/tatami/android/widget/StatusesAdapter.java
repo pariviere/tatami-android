@@ -6,6 +6,7 @@ import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
-import com.fedorvlasov.lazylist.ImageLoader;
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.ImageOptions;
 
 /**
  * <p>
@@ -35,7 +38,6 @@ import com.fedorvlasov.lazylist.ImageLoader;
  * @author pariviere
  */
 public class StatusesAdapter extends CursorAdapter {
-	private ImageLoader imageLoader;
 	private HtmlSpanner htmlSpanner;
 
 	public static class ViewHolder {
@@ -46,8 +48,8 @@ public class StatusesAdapter extends CursorAdapter {
 
 	public StatusesAdapter(Context context, Cursor c) {
 		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		imageLoader = new ImageLoader(context);
 		htmlSpanner = new HtmlSpanner();
+        AjaxCallback.setNetworkLimit(2);
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class StatusesAdapter extends CursorAdapter {
 		viewHolder.info = (TextView) rowView.findViewById(R.id.info);
 
 		rowView.setTag(viewHolder);
-
+		
 		return rowView;
 	}
 
@@ -74,7 +76,7 @@ public class StatusesAdapter extends CursorAdapter {
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
 
 		buildStatusTextView(viewHolder.status, status);
-		buildAvatarTextView(viewHolder.avatar, status);
+		buildAvatarTextView(view, viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
 	}
 
@@ -89,19 +91,30 @@ public class StatusesAdapter extends CursorAdapter {
 		return infoTextView;
 	}
 
-	public ImageView buildAvatarTextView(ImageView avatarImageView,
+	public ImageView buildAvatarTextView(View view, ImageView avatarImageView,
 			Status status) {
-
 		String gravatar = status.getGravatar();
 
 		String url = "http://www.gravatar.com/avatar/" + gravatar
 				+ "?s=80&d=mm";
+		
+		AQuery aq = new AQuery(view);
+		
+		Bitmap preset = aq.getCachedImage(url);
 
-		imageLoader.DisplayImage(url, avatarImageView);
+		ImageOptions options = new ImageOptions();
+		options.round = 15;
+		options.fileCache = true;
+		options.memCache = true;
+		options.preset = preset;
+		options.targetWidth = 80;
+		options.fallback = R.drawable.ic_mm;				
+		
+		aq.id(avatarImageView).image(url, options);
 
 		return avatarImageView;
 	}
-
+	
 	public TextView buildStatusTextView(TextView statusTextView, Status status) {
 		statusTextView.setTextSize(14);
 
@@ -117,5 +130,4 @@ public class StatusesAdapter extends CursorAdapter {
 
 		return statusTextView;
 	}
-
 }
