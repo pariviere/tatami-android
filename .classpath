@@ -5,7 +5,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="libs/imageloader.jar"/>
 	<classpathentry kind="lib" path="libs/htmlcleaner-2.2.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-android-4.42.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-core-4.42.jar"/>

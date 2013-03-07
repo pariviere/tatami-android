@@ -7,9 +7,11 @@ import tatami.android.model.StatusFactory;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
-import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +34,13 @@ import com.androidquery.callback.ImageOptions;
  * @author pariviere
  */
 public class StatusesAdapter extends CursorAdapter {
+	private static String TAG = StatusesAdapter.class.getSimpleName();
+
+	private int selected = -1;
 	private HtmlSpanner htmlSpanner;
 	private ImageOptions imageOptions;
+	private Context context;
+	private LruCache<String, SpannableStringBuilder> spanCache;
 
 	public static class ViewHolder {
 		public ImageView avatar;
@@ -41,8 +48,19 @@ public class StatusesAdapter extends CursorAdapter {
 		public TextView info;
 	}
 
+	public int getSelected() {
+		return selected;
+	}
+
+	public void setSelected(int selected) {
+		this.selected = selected;
+	}
+
 	public StatusesAdapter(Context context, Cursor c) {
 		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		this.context = context;
+		spanCache = new LruCache<String, SpannableStringBuilder>(50);
+
 		htmlSpanner = new HtmlSpanner();
 		initAquery();
 	}
@@ -81,7 +99,7 @@ public class StatusesAdapter extends CursorAdapter {
 
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-		buildStatusTextView(viewHolder.status, status);
+		StatusTextViewMapper.getInstance(context).decorate(viewHolder.status, status);
 		buildAvatarTextView(view, viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
 	}
@@ -113,21 +131,4 @@ public class StatusesAdapter extends CursorAdapter {
 		return avatarImageView;
 	}
 
-	public TextView buildStatusTextView(TextView statusTextView, Status status) {
-		statusTextView.setTextSize(14);
-
-		String html = status.getHtmlContent();
-
-		SpannableStringBuilder ssb = (SpannableStringBuilder) htmlSpanner
-				.fromHtml(html);
-
-		UsernameDecorator.getInstance().decorate(ssb);
-		TagDecorator.getInstance().decorate(ssb);
-		URLDecorator.getInstance(mContext).decorate(ssb);
-		
-
-		statusTextView.setText(ssb, BufferType.SPANNABLE);
-
-		return statusTextView;
-	}
 }
