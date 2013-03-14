@@ -22,7 +22,7 @@ import com.octo.android.robospice.request.SpiceRequest;
 public abstract class AuthenticatedRequest<RESULT> extends SpiceRequest<RESULT> {
 	private static String TAG = AuthenticatedRequest.class.getSimpleName();
 
-	private Context context;
+	Context context;
 	private String login;
 	private String passwd;
 	private boolean authenticated = false;

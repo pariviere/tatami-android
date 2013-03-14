@@ -2,10 +2,8 @@ package tatami.android;
 
 import java.util.Calendar;
 
-import com.octo.android.robospice.persistence.memory.CacheItem;
-
-import tatami.android.model.Status;
 import tatami.android.request.ConversationDetails;
+import tatami.android.request.ListStatus;
 import tatami.android.task.TriggerSync;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -17,6 +15,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.util.LruCache;
 
+import com.octo.android.robospice.persistence.memory.CacheItem;
+
 /**
  * <p>
  * Implementation of {@link Application} in order to handle common behaviors
@@ -25,7 +25,7 @@ import android.support.v4.util.LruCache;
  * @author pariviere
  */
 public class TatamiApp extends android.app.Application {
-	public static LruCache<Object, CacheItem<Status>> statusCache = new LruCache<Object, CacheItem<Status>>(
+	public static LruCache<Object, CacheItem<ListStatus>> listStatus = new LruCache<Object, CacheItem<ListStatus>>(
 			4 * 1024 * 1024);
 
 	public static LruCache<Object, CacheItem<ConversationDetails>> conversationCache = new LruCache<Object, CacheItem<ConversationDetails>>(

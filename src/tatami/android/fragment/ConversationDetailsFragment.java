@@ -28,8 +28,8 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 
 /**
  * <p>
- * This implementation of {@link ListFragment} display a list of {@link Status} which 
- * is linked to a {@link Status}.
+ * This implementation of {@link ListFragment} display a list of {@link Status}
+ * linked to a {@link Status}.
  * </p>
  * 
  * @author pariviere
@@ -38,14 +38,13 @@ public class ConversationDetailsFragment extends ListFragment implements
 		LoaderCallbacks<Cursor> {
 	private final static String TAG = ConversationDetailsFragment.class
 			.getSimpleName();
-	
+
 	private SpiceManager spiceManager = new SpiceManager(
 			AsyncRequestHandler.class);
 	private StatusesAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
 	private Status currentStatus = null;
 	private DetailsObserver detailsObserver;
-
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -60,35 +59,33 @@ public class ConversationDetailsFragment extends ListFragment implements
 		}
 	}
 
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_details_status,
 				container, false);
-		
+
 		this.pullToRefreshListView = (PullToRefreshListView) view
 				.findViewById(R.id.status_list_view);
 		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
-		
-		this.detailsObserver = new DetailsObserver(this);
 
+		this.detailsObserver = new DetailsObserver(this);
 
 		Activity activity = this.getActivity();
 		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 		Log.d(TAG, "Selected status primary key is  " + id);
 
-		
 		Cursor cursor = activity.getContentResolver().query(
 				UriBuilder.getStatusUri(id), null, null, null, null);
-		
+
 		if (cursor.getCount() != 0) {
 			Status status = StatusFactory.fromCursorRow(cursor);
 			String forStatusId = status.getStatusId();
 			currentStatus = status;
 			getActivity().getContentResolver().registerContentObserver(
-					UriBuilder.getDetailsUri(forStatusId), false, detailsObserver);
+					UriBuilder.getDetailsUri(forStatusId), false,
+					detailsObserver);
 			registerCallBacks(forStatusId);
 		}
 		cursor.close();
@@ -115,7 +112,7 @@ public class ConversationDetailsFragment extends ListFragment implements
 		getActivity().getContentResolver().unregisterContentObserver(
 				detailsObserver);
 	}
-	
+
 	@Override
 	public void onStart() {
 		spiceManager.start(getActivity().getApplicationContext());

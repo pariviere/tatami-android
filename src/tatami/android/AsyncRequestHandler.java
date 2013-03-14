@@ -1,7 +1,7 @@
 package tatami.android;
 
-import tatami.android.model.Status;
 import tatami.android.request.ConversationDetails;
+import tatami.android.request.ListStatus;
 import android.app.Application;
 import android.app.Service;
 
@@ -28,11 +28,11 @@ public class AsyncRequestHandler extends SpiceService {
 
 		CacheManager cacheManager = new CacheManager();
 
-		// Every object which is intented to be cached by Robospice 
+		// Every object which is intented to be cached by Robospice
 		// has its own dedicated cache
 		// Registration is required via cacheManager.addPersister
-		LruCacheObjectPersister<Status> statusPersister = new LruCacheObjectPersister<Status>(
-				Status.class, TatamiApp.statusCache);
+		LruCacheObjectPersister<ListStatus> statusPersister = new LruCacheObjectPersister<ListStatus>(
+				ListStatus.class, TatamiApp.listStatus);
 		cacheManager.addPersister(statusPersister);
 
 		LruCacheObjectPersister<ConversationDetails> conversationPersister = new LruCacheObjectPersister<ConversationDetails>(
