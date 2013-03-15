@@ -1,13 +1,10 @@
 package tatami.android.fragment;
 
-import tatami.android.AsyncRequestHandler;
 import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
-import tatami.android.request.ConversationDetailsListener;
-import tatami.android.request.ConversationDetailsRequest;
 import tatami.android.widget.DetailsObserver;
 import tatami.android.widget.StatusesAdapter;
 import android.app.Activity;
@@ -23,8 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
 
 /**
  * <p>
@@ -39,8 +34,6 @@ public class ConversationDetailsFragment extends ListFragment implements
 	private final static String TAG = ConversationDetailsFragment.class
 			.getSimpleName();
 
-	private SpiceManager spiceManager = new SpiceManager(
-			AsyncRequestHandler.class);
 	private StatusesAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
 	private Status currentStatus = null;
@@ -86,7 +79,6 @@ public class ConversationDetailsFragment extends ListFragment implements
 			getActivity().getContentResolver().registerContentObserver(
 					UriBuilder.getDetailsUri(forStatusId), false,
 					detailsObserver);
-			registerCallBacks(forStatusId);
 		}
 		cursor.close();
 
@@ -111,34 +103,5 @@ public class ConversationDetailsFragment extends ListFragment implements
 		super.onPause();
 		getActivity().getContentResolver().unregisterContentObserver(
 				detailsObserver);
-	}
-
-	@Override
-	public void onStart() {
-		spiceManager.start(getActivity().getApplicationContext());
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		spiceManager.shouldStop();
-		super.onStop();
-	}
-
-	/**
-	 * 
-	 * @param forStatusId
-	 */
-	private void registerCallBacks(String forStatusId) {
-		Log.d(TAG, "Selected status is " + forStatusId);
-
-		ConversationDetailsRequest request = new ConversationDetailsRequest(
-				getActivity().getApplicationContext(), forStatusId);
-		ConversationDetailsListener listener = new ConversationDetailsListener(
-				getActivity().getApplicationContext());
-
-		spiceManager.execute(request, request.toString(),
-				DurationInMillis.ONE_MINUTE * 2, listener);
-
 	}
 }
