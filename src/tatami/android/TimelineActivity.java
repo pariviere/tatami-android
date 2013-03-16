@@ -5,12 +5,12 @@ import java.util.HashMap;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
+import tatami.android.request.PullToRefreshAwareTimelineListener;
 import tatami.android.request.TimelineListener;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
 import tatami.android.widget.StatusesAdapter;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -21,7 +21,6 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 
@@ -87,14 +86,24 @@ public class TimelineActivity extends FragmentActivity implements
 	@Override
 	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
 
+		HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) refreshView
+				.getRefreshableView().getAdapter();
+		StatusesAdapter statusesAdapter = (StatusesAdapter) headerViewListAdapter
+				.getWrappedAdapter();
+
+		long id = statusesAdapter.getItemId(0);
+
+		HashMap<String, String> extra = new HashMap<String, String>();
+
+		TimelineRequest request = new TimelineRequest(this, extra);
+		TimelineListener listener = new PullToRefreshAwareTimelineListener(this, refreshView);
+		spiceManager.execute(request, request.toString(),
+				DurationInMillis.ONE_MINUTE, listener);
 	}
 
 	@Override
 	public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-		PullToRefreshListView listView = (PullToRefreshListView) refreshView
-				.findViewById(R.id.status_list_view);
-
-		HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) listView
+		HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) refreshView
 				.getRefreshableView().getAdapter();
 		StatusesAdapter statusesAdapter = (StatusesAdapter) headerViewListAdapter
 				.getWrappedAdapter();
@@ -114,12 +123,12 @@ public class TimelineActivity extends FragmentActivity implements
 			extra.put(SyncMeta.BEFORE_ID, statusId);
 
 			TimelineRequest request = new TimelineRequest(this, extra);
-			TimelineListener listener = new TimelineListener(this);
+			TimelineListener listener = new PullToRefreshAwareTimelineListener(this, refreshView);
 
 			spiceManager.execute(request, request.toString(),
 					DurationInMillis.ONE_MINUTE, listener);
 		} else {
-			listView.onRefreshComplete();
+			refreshView.onRefreshComplete();
 		}
 
 	}

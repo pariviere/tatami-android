@@ -45,13 +45,6 @@ public class StatusesList extends ListFragment implements
 	}
 
 	public void stopLoading() {
-		Log.d(TAG, "Stop refresh animation");
-
-		statusesAdapter.notifyDataSetChanged();
-		if (pullToRefreshListView.isRefreshing()) {
-			pullToRefreshListView.onRefreshComplete();
-		}
-
 		getLoaderManager().restartLoader(StatusesList.class.hashCode(), null,
 				this);
 	}
