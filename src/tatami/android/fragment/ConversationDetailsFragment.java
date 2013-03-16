@@ -5,12 +5,9 @@ import tatami.android.R;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
-import tatami.android.sync.SyncMeta;
-import tatami.android.task.TriggerSync;
 import tatami.android.widget.DetailsObserver;
 import tatami.android.widget.StatusesAdapter;
 import android.app.Activity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -24,83 +21,23 @@ import android.view.ViewGroup;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-
 /**
+ * <p>
+ * This implementation of {@link ListFragment} display a list of {@link Status}
+ * linked to a {@link Status}.
+ * </p>
+ * 
  * @author pariviere
  */
-public class DetailsStatus extends ListFragment implements
+public class ConversationDetailsFragment extends ListFragment implements
 		LoaderCallbacks<Cursor> {
-	private final static String TAG = DetailsStatus.class.getSimpleName();
+	private final static String TAG = ConversationDetailsFragment.class
+			.getSimpleName();
 
 	private StatusesAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
 	private Status currentStatus = null;
 	private DetailsObserver detailsObserver;
-
-	public StatusesAdapter getStatusesAdapter() {
-		return statusesAdapter;
-	}
-
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		getActivity().getContentResolver().unregisterContentObserver(
-				detailsObserver);
-	}
-
-	
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-
-		detailsObserver = new DetailsObserver(this);
-		Log.d(TAG, "Details list fragment loading...");
-
-		View view = inflater.inflate(R.layout.fragment_details_status,
-				container, false);
-
-		this.pullToRefreshListView = (PullToRefreshListView) view
-				.findViewById(R.id.status_list_view);
-
-		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
-		this.pullToRefreshListView.setAdapter(statusesAdapter);
-
-		Activity activity = this.getActivity();
-		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
-
-		Intent intent = new Intent(activity, TriggerSync.class);
-
-		Log.d(TAG, "Selected status primary key is  " + id);
-
-		Cursor cursor = activity.getContentResolver().query(
-				UriBuilder.getStatusUri(id), null, null, null, null);
-
-		if (cursor.getCount() != 0) {
-			Status status = StatusFactory.fromCursorRow(cursor);
-			currentStatus = status;
-			String statusId = status.getStatusId();
-
-			Log.d(TAG, "Current status is " + statusId);
-
-			intent.putExtra(SyncMeta.TYPE, SyncMeta.TYPE_DETAILS);
-			intent.putExtra(SyncMeta.STATUS_ID, statusId);
-
-			activity.startService(intent);
-
-			getActivity().getContentResolver().registerContentObserver(
-					UriBuilder.getDetailsUri(statusId), false, detailsObserver);
-
-		}
-
-		cursor.close();
-
-		getLoaderManager().initLoader(DetailsStatus.class.hashCode(), null,
-				this);
-
-		return view;
-	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -110,9 +47,50 @@ public class DetailsStatus extends ListFragment implements
 					UriBuilder.getDetailsUri(currentStatus.getStatusId()),
 					null, null, null, null);
 		} else {
-			Log.w(TAG, "No status selected??");
+			Log.e(TAG, "No status selected? How can I display a conversation?");
 			return null;
 		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_details_status,
+				container, false);
+
+		this.pullToRefreshListView = (PullToRefreshListView) view
+				.findViewById(R.id.status_list_view);
+		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
+		this.pullToRefreshListView.setAdapter(statusesAdapter);
+
+		this.detailsObserver = new DetailsObserver(this);
+
+		Activity activity = this.getActivity();
+		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
+		Log.d(TAG, "Selected status primary key is  " + id);
+
+		Cursor cursor = activity.getContentResolver().query(
+				UriBuilder.getStatusUri(id), null, null, null, null);
+
+		if (cursor.getCount() != 0) {
+			Status status = StatusFactory.fromCursorRow(cursor);
+			String forStatusId = status.getStatusId();
+			currentStatus = status;
+			getActivity().getContentResolver().registerContentObserver(
+					UriBuilder.getDetailsUri(forStatusId), false,
+					detailsObserver);
+		}
+		cursor.close();
+
+		getLoaderManager().initLoader(
+				ConversationDetailsFragment.class.hashCode(), null, this);
+
+		return view;
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		statusesAdapter.swapCursor(null);
 	}
 
 	@Override
@@ -121,7 +99,9 @@ public class DetailsStatus extends ListFragment implements
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		statusesAdapter.swapCursor(null);
+	public void onPause() {
+		super.onPause();
+		getActivity().getContentResolver().unregisterContentObserver(
+				detailsObserver);
 	}
 }

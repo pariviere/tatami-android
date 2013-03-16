@@ -48,6 +48,9 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+        <service 
+            android:name=".AsyncRequestHandler"
+            android:exported="false" />
         <service
             android:name=".task.TriggerSync"
             android:exported="false" >

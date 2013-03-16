@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawSelectorOnTop="false"
-        ptr:ptrMode="pullUpFromBottom" 
+        ptr:ptrMode="both" 
         android:background="#EEE"
         android:showDividers="none"
      />
