@@ -3,6 +3,7 @@ package tatami.android.fragment;
 import tatami.android.Constants;
 import tatami.android.DetailsActivity;
 import tatami.android.R;
+import tatami.android.TimelineActivity;
 import tatami.android.content.UriBuilder;
 import tatami.android.widget.StatusesAdapter;
 import tatami.android.widget.StatusesObserver;
@@ -98,8 +99,10 @@ public class StatusesList extends ListFragment implements
 
 		this.pullToRefreshListView.getRefreshableView().setItemsCanFocus(true);
 
+		
+		
 		observer = new StatusesObserver(this);
-		this.pullToRefreshListView.setOnRefreshListener(observer);
+		this.pullToRefreshListView.setOnRefreshListener((TimelineActivity)getActivity());
 
 		getActivity().getContentResolver().registerContentObserver(
 				UriBuilder.getFullUri(), false, observer);

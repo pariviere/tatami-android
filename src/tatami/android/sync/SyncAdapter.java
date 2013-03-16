@@ -1,31 +1,27 @@
 package tatami.android.sync;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.List;
+import java.util.HashMap;
 
-import tatami.android.Client;
 import tatami.android.R;
 import tatami.android.TimelineActivity;
-import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
-import tatami.android.model.StatusFactory;
+import tatami.android.request.ListStatus;
+import tatami.android.request.TimelineListener;
+import tatami.android.request.TimelineRequest;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 /**
  * <p>
@@ -53,105 +49,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
-
-		String login = account.name;
-		String passwd = AccountManager.get(super.getContext()).getPassword(
-				account);
-
-		Log.d(TAG, "Launch asked for " + login);
-		boolean authenticate = false;
-		try {
-			authenticate = Client.getInstance().authenticate(login, passwd);
-		} catch (Exception e) {
-			Log.e(TAG, "Unable to handle authentication with Tatami server : "
-					+ e.getMessage(), e);
-			syncResult.stats.numAuthExceptions++;
-			return;
-		}
-
-		if (!authenticate) {
-			Log.d(TAG, String.format(
-					"Authentication for %s rejected by Tatami server", login));
-			syncResult.stats.numAuthExceptions++;
-			return;
-		} else {
-			Log.d(TAG,
-					"Authentication succeed with Tatami server. Launch sync.");
-
-			int syncType = SyncMeta.TYPE_TIMELINE;
-
-			if (extras.containsKey(SyncMeta.TYPE)) {
-				syncType = extras.getInt(SyncMeta.TYPE);
-			}
-
-			switch (syncType) {
-			case SyncMeta.TYPE_DETAILS:
-				try {
-					Log.d(TAG, "Sync mode is syncDetails");
-					doSyncDetails(extras, provider, syncResult, login, passwd);
-				} catch (Exception ex) {
-					Log.e(TAG,
-							String.format("syncDetails have failed : %s",
-									ex.getMessage()), ex);
-					syncResult.stats.numIoExceptions++;
-				}
-				break;
-			default:
-				try {
-					Log.d(TAG, "Sync mode is syncTimeline");
-					doSyncTimeline(extras, provider, syncResult, login, passwd);
-				} catch (Exception ex) {
-					Log.e(TAG,
-							String.format("syncTimeline have failed : %s",
-									ex.getMessage()), ex);
-					syncResult.stats.numIoExceptions++;
-				}
-				break;
-			}
-		}
-	}
-
-	/**
-	 * <p>
-	 * Do syncDetails
-	 * </p>
-	 * 
-	 * @param extras
-	 * @param provider
-	 * @param login
-	 * @param passwd
-	 * @throws Exception
-	 */
-	private void doSyncDetails(Bundle extras, ContentProviderClient provider,
-			SyncResult syncResult, String login, String passwd)
-			throws Exception {
-
-		if (!extras.containsKey(SyncMeta.STATUS_ID))
-			return;
-
-		// let's find discussion which refers to currentStatusId
-		String currentStatusId = extras.getString(SyncMeta.STATUS_ID);
-
-		List<Status> statuses = Client.getInstance()
-				.getDetails(currentStatusId);
-
-		Uri fullUri = UriBuilder.getFullUri();
-		Uri detailsUri = UriBuilder.getDetailsUri(currentStatusId);
-
-		for (Status status : statuses) {
-			ContentValues statusValues = StatusFactory.to(status);
-			provider.insert(fullUri, statusValues);
-
-			syncResult.stats.numEntries++;
-			syncResult.stats.numInserts++;
-
-			ContentValues detailsValues = new ContentValues();
-			detailsValues.put("detailsId", currentStatusId);
-			detailsValues.put("statusId", status.getStatusId());
-			provider.insert(detailsUri, detailsValues);
-
-			syncResult.stats.numInserts++;
-		}
+		doSyncTimeline(extras, provider, syncResult);
 	}
 
 	/**
@@ -166,49 +64,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @throws Exception
 	 */
 	private void doSyncTimeline(Bundle extras, ContentProviderClient provider,
-			SyncResult syncResult, String login, String passwd)
-			throws Exception {
-		Uri fullUri = UriBuilder.getFullUri();
+			SyncResult syncResult) {
 
-		SimpleEntry<String, String> queryParams = null;
+		// Robspice request and listener are used but without
+		// using robospice async feature.
+		// Indeed, SyncAdapter already used a threading approach.
+		Context context = this.getContext();
+		TimelineRequest request = new TimelineRequest(context,
+				new HashMap<String, String>());
+		TimelineListener listener = new TimelineListener(context);
 
-		// timeline is sync either by date (autosync)
-		// either against another status
-		boolean autosync = false;
-
-		if (extras.containsKey(SyncMeta.BEFORE_ID)) {
-			String beforeStatusId = extras.getString(SyncMeta.BEFORE_ID);
-
-			queryParams = new SimpleEntry<String, String>("max_id",
-					beforeStatusId);
-		} else {
-			autosync = true;
-
-			Status last = queryLastStatus(provider);
-
-			if (last != null) {
-				queryParams = new SimpleEntry<String, String>("since_id",
-						last.getStatusId());
-			}
+		try {
+			ListStatus listStatus = request.doLoadDataFromNetwork();
+			listener.onRequestSuccess(listStatus);
+			notifyNewStatus(listStatus);
+			syncResult.stats.numUpdates++;
+		} catch (Exception ex) {
+			syncResult.stats.numIoExceptions++;
+			listener.onRequestFailure(new SpiceException(ex));
 		}
 
-		List<Status> statuses = Client.getInstance().getTimeline(queryParams);
-
-		Log.d(TAG, "Found " + statuses.size() + " statuses with queryParams = "
-				+ queryParams);
-
-		for (Status status : statuses) {
-			ContentValues statusValues = StatusFactory.to(status);
-
-			provider.insert(fullUri, statusValues);
-			syncResult.stats.numEntries++;
-			syncResult.stats.numInserts++;
-		}
-
-		// I don't want to be notified when
-		// sync request is issued by user
-		if (autosync)
-			notifyNewStatus(statuses);
 	}
 
 	/**
@@ -217,7 +92,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	 * 
 	 * @param statuses
 	 */
-	protected void notifyNewStatus(List<Status> statuses) {
+	protected void notifyNewStatus(ListStatus statuses) {
 		if (statuses.size() > 0) {
 			Log.d(TAG, "Send notification to user");
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
@@ -264,27 +139,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			manager.notify(27272727, builder.build());
 		}
 
-	}
-
-	/**
-	 * <p>
-	 * Return the last status
-	 * </p>
-	 * 
-	 * @param provider
-	 * @return
-	 * @throws RemoteException
-	 */
-	protected Status queryLastStatus(ContentProviderClient provider)
-			throws RemoteException {
-
-		Uri lastUri = UriBuilder.getLastStatusUri();
-
-		Cursor cursor = provider.query(lastUri, null, null, null, null);
-
-		if (cursor.moveToFirst())
-			return StatusFactory.fromCursorRow(cursor);
-		else
-			return null;
 	}
 }
