@@ -63,8 +63,7 @@
             android:label="Status"
             android:syncable="true" />
 
-        <activity android:name="tatami.android.account.SignActivity" >
-        </activity>
+        <activity android:name="tatami.android.account.SignActivity" />
         <activity
             android:name="tatami.android.ui.TimelineActivity"
             android:configChanges="orientation"

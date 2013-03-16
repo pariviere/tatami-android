@@ -2,19 +2,18 @@ package tatami.android.ui;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.R.id;
-import tatami.android.R.layout;
-import tatami.android.R.menu;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import tatami.android.request.AsyncRequestHandler;
 import tatami.android.request.ConversationDetailsListener;
 import tatami.android.request.ConversationDetailsRequest;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,8 +66,10 @@ public class DetailsActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			finish();
+			
 			return true;
+
 		case R.id.menu_compose:
 			ComposeDialog dialog = new ComposeDialog();
 			Bundle args = new Bundle();
@@ -77,6 +78,7 @@ public class DetailsActivity extends FragmentActivity {
 			dialog.show(getSupportFragmentManager(), TAG);
 			return true;
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
