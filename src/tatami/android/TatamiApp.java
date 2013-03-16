@@ -2,6 +2,9 @@ package tatami.android;
 
 import java.util.Calendar;
 
+import tatami.android.request.ConversationDetails;
+import tatami.android.request.ListStatus;
+import tatami.android.sync.SyncService;
 import tatami.android.task.TriggerSync;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -11,6 +14,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.AlarmClock;
+import android.support.v4.util.LruCache;
+
+import com.octo.android.robospice.persistence.memory.CacheItem;
 
 /**
  * <p>
@@ -20,6 +27,12 @@ import android.net.NetworkInfo;
  * @author pariviere
  */
 public class TatamiApp extends android.app.Application {
+	public static LruCache<Object, CacheItem<ListStatus>> listStatus = new LruCache<Object, CacheItem<ListStatus>>(
+			4 * 1024 * 1024);
+
+	public static LruCache<Object, CacheItem<ConversationDetails>> conversationCache = new LruCache<Object, CacheItem<ConversationDetails>>(
+			4 * 1024 * 1024);
+
 	@Override
 	public void onCreate() {
 		super.onCreate();

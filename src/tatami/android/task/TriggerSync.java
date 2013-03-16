@@ -1,7 +1,6 @@
 package tatami.android.task;
 
 import tatami.android.Constants;
-import tatami.android.TatamiApp;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.IntentService;

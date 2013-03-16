@@ -1,13 +1,13 @@
 package tatami.android.widget;
 
-import tatami.android.fragment.DetailsStatus;
+import tatami.android.fragment.ConversationDetailsFragment;
 import android.database.ContentObserver;
 import android.net.Uri;
 
 public class DetailsObserver extends ContentObserver {
-	DetailsStatus detailsStatus;
+	ConversationDetailsFragment detailsStatus;
 
-	public DetailsObserver(DetailsStatus detailsStatus) {
+	public DetailsObserver(ConversationDetailsFragment detailsStatus) {
 		super(null);
 		this.detailsStatus = detailsStatus;
 	}
@@ -20,8 +20,10 @@ public class DetailsObserver extends ContentObserver {
 
 			@Override
 			public void run() {
-				detailsStatus.getLoaderManager().restartLoader(0, null,
-						detailsStatus);
+				if (detailsStatus != null) {
+					detailsStatus.getLoaderManager().restartLoader(0, null,
+							detailsStatus);
+				}
 			}
 		});
 	}

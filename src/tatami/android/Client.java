@@ -153,9 +153,9 @@ public class Client {
 	public List<Status> getDetails(String statusId) throws Exception {
 		doAuthenticateIfNecessary();
 
-		URL discussion = new URL(String.format(ClientURL.DETAILS, statusId));
+		URL details = new URL(String.format(ClientURL.DETAILS, statusId));
 		HttpURLConnection.setFollowRedirects(false);
-		HttpURLConnection discussionConnection = getHttpURLConnection(discussion);
+		HttpURLConnection discussionConnection = getHttpURLConnection(details);
 
 		discussionConnection.addRequestProperty("Accept", "application/json");
 
