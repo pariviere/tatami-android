@@ -1,6 +1,6 @@
 package tatami.android.task;
 
-import tatami.android.TatamiApp;
+import tatami.android.AppState;
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,7 +23,7 @@ public class ComposeSync extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-		TatamiApp app = (TatamiApp) getApplication();
+		AppState app = (AppState) getApplication();
 
 		if (app.isConnected()) {
 
@@ -37,7 +37,7 @@ public class ComposeSync extends IntentService {
 	private class NetworkChangeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			TatamiApp app = (TatamiApp) getApplication();
+			AppState app = (AppState) getApplication();
 
 		}
 	}

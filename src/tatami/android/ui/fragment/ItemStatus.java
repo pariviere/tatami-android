@@ -1,10 +1,10 @@
-package tatami.android.fragment;
+package tatami.android.ui.fragment;
 
 import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
-import tatami.android.widget.StatusesAdapter;
-import tatami.android.widget.StatusesAdapter.ViewHolder;
+import tatami.android.ui.widget.StatusesAdapter;
+import tatami.android.ui.widget.StatusesAdapter.ViewHolder;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;

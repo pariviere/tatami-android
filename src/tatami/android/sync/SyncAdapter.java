@@ -3,11 +3,11 @@ package tatami.android.sync;
 import java.util.HashMap;
 
 import tatami.android.R;
-import tatami.android.TimelineActivity;
 import tatami.android.model.Status;
 import tatami.android.request.ListStatus;
 import tatami.android.request.TimelineListener;
 import tatami.android.request.TimelineRequest;
+import tatami.android.ui.TimelineActivity;
 import android.accounts.Account;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

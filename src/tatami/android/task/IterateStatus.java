@@ -1,6 +1,6 @@
 package tatami.android.task;
 
-import tatami.android.TimelineActivity;
+import tatami.android.ui.TimelineActivity;
 import android.os.AsyncTask;
 
 public class IterateStatus

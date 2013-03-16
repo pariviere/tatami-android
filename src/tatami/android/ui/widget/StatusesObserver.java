@@ -1,6 +1,6 @@
-package tatami.android.widget;
+package tatami.android.ui.widget;
 
-import tatami.android.fragment.StatusesList;
+import tatami.android.ui.fragment.StatusesList;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.util.Log;

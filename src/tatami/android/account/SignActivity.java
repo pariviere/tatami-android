@@ -2,7 +2,7 @@ package tatami.android.account;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.TatamiApp;
+import tatami.android.AppState;
 import tatami.android.task.DoLogin;
 import tatami.android.task.LoginListener;
 import android.accounts.Account;
@@ -88,7 +88,7 @@ public class SignActivity extends AccountAuthenticatorActivity implements
 	 */
 	public void onLogin(View view) {
 
-		TatamiApp app = (TatamiApp) getApplication();
+		AppState app = (AppState) getApplication();
 
 		if (!app.isConnected()) {
 			Log.i(TAG, "No network found. Login process abort");

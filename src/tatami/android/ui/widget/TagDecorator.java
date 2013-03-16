@@ -1,4 +1,4 @@
-package tatami.android.widget;
+package tatami.android.ui.widget;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,41 +6,28 @@ import java.util.regex.Pattern;
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 
+public class TagDecorator implements SpannableDecorator {
 
-/**
- * <p>
- * 
- * </p>
- * @author pariviere
- */
-public class UsernameDecorator implements SpannableDecorator {
+	private static TagDecorator _instance = null;
 	
-	private static UsernameDecorator _instance = null;
-	
-	public static UsernameDecorator getInstance() {
+	public static TagDecorator getInstance() {
 		if (_instance == null) {
-			_instance = new UsernameDecorator();
+			_instance = new TagDecorator();
 		}
 		
 		return _instance;
 	}
 	
 	
-	/**
-	 * <p>
-	 * \@username regex
-	 * </p>
-	 */
-	private static String regex = "\\B@([A-Za-z0-9_]+)"; 
-	
+	private String regex = "\\B#\\w*[a-zA-Z]+\\w*";
 	
 	private Pattern pattern;
 	
-	private UsernameDecorator() {
+	private TagDecorator() {
 		this.pattern = Pattern.compile(regex);
 	}
-
 	
 	@Override
 	public void decorate(SpannableStringBuilder ssb) {
@@ -52,8 +39,7 @@ public class UsernameDecorator implements SpannableDecorator {
 			int start = matcher.start();
 			int end = matcher.end();
 			
-			ssb.setSpan(new ForegroundColorSpan(Color.RED), start, end, 0);
-		}
+			ssb.setSpan(new ForegroundColorSpan(Color.GREEN), start, end, 0);
+		}		
 	}
-
 }

@@ -1,5 +1,10 @@
-package tatami.android;
+package tatami.android.ui;
 
+import tatami.android.AppState;
+import tatami.android.Constants;
+import tatami.android.R;
+import tatami.android.R.id;
+import tatami.android.R.layout;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
@@ -30,12 +35,12 @@ import android.widget.Toast;
 public class ComposeDialog extends DialogFragment {
 	private EditText composeEdit;
 	private TextView countText;
-	private TatamiApp app;
+	private AppState app;
 	private String selectedStatusId;
 
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		app = (TatamiApp) getActivity().getApplication();
+		app = (AppState) getActivity().getApplication();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();

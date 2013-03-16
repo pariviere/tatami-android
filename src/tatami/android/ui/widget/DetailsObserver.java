@@ -1,6 +1,6 @@
-package tatami.android.widget;
+package tatami.android.ui.widget;
 
-import tatami.android.fragment.ConversationDetailsFragment;
+import tatami.android.ui.fragment.ConversationDetailsFragment;
 import android.database.ContentObserver;
 import android.net.Uri;
 

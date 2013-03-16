@@ -1,15 +1,21 @@
-package tatami.android;
+package tatami.android.ui;
 
 import java.util.HashMap;
 
+import tatami.android.R;
+import tatami.android.R.id;
+import tatami.android.R.layout;
+import tatami.android.R.menu;
+import tatami.android.R.string;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
+import tatami.android.request.AsyncRequestHandler;
 import tatami.android.request.PullToRefreshAwareTimelineListener;
 import tatami.android.request.TimelineListener;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
-import tatami.android.widget.StatusesAdapter;
+import tatami.android.ui.widget.StatusesAdapter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

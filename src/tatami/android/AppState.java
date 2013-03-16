@@ -4,8 +4,7 @@ import java.util.Calendar;
 
 import tatami.android.request.ConversationDetails;
 import tatami.android.request.ListStatus;
-import tatami.android.sync.SyncService;
-import tatami.android.task.TriggerSync;
+import tatami.android.sync.TriggerSync;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -14,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.AlarmClock;
 import android.support.v4.util.LruCache;
 
 import com.octo.android.robospice.persistence.memory.CacheItem;
@@ -26,7 +24,7 @@ import com.octo.android.robospice.persistence.memory.CacheItem;
  * 
  * @author pariviere
  */
-public class TatamiApp extends android.app.Application {
+public class AppState extends Application {
 	public static LruCache<Object, CacheItem<ListStatus>> listStatus = new LruCache<Object, CacheItem<ListStatus>>(
 			4 * 1024 * 1024);
 
@@ -49,7 +47,7 @@ public class TatamiApp extends android.app.Application {
 
 		Intent intent = new Intent(this, TriggerSync.class);
 		PendingIntent pendingIntent = PendingIntent.getService(this,
-				TatamiApp.class.hashCode(), intent,
+				AppState.class.hashCode(), intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 
 		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);

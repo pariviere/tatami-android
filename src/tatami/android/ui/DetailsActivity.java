@@ -1,8 +1,14 @@
-package tatami.android;
+package tatami.android.ui;
 
+import tatami.android.Constants;
+import tatami.android.R;
+import tatami.android.R.id;
+import tatami.android.R.layout;
+import tatami.android.R.menu;
 import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
+import tatami.android.request.AsyncRequestHandler;
 import tatami.android.request.ConversationDetailsListener;
 import tatami.android.request.ConversationDetailsRequest;
 import android.database.Cursor;

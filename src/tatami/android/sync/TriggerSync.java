@@ -1,4 +1,4 @@
-package tatami.android.task;
+package tatami.android.sync;
 
 import tatami.android.Constants;
 import android.accounts.Account;

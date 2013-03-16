@@ -5,13 +5,13 @@
 
     <fragment
         android:id="@+id/status_item_fragment"
-        android:name="tatami.android.fragment.ItemStatus"
+        android:name="tatami.android.ui.fragment.ItemStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <fragment
         android:id="@+id/list_status_fragment"
-        android:name="tatami.android.fragment.ConversationDetailsFragment"
+        android:name="tatami.android.ui.fragment.ConversationDetailsFragment"
         android:layout_below="@+id/status_item_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

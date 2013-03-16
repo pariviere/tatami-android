@@ -1,5 +1,11 @@
-package tatami.android;
+package tatami.android.ui;
 
+import tatami.android.AppState;
+import tatami.android.R;
+import tatami.android.R.id;
+import tatami.android.R.layout;
+import tatami.android.R.menu;
+import tatami.android.R.string;
 import tatami.android.task.DoLogin;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -49,7 +55,7 @@ public class LoginActivity extends Activity {
 	 */
 	public void doLogin(View view) {
 
-		TatamiApp app = (TatamiApp) getApplication();
+		AppState app = (AppState) getApplication();
 
 		if (!app.isConnected()) {
 			Toast.makeText(this, "No network found", Toast.LENGTH_SHORT).show();

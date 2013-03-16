@@ -1,4 +1,4 @@
-package tatami.android.widget;
+package tatami.android.ui.widget;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 import tatami.android.model.Status;

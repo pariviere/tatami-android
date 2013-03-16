@@ -1,4 +1,4 @@
-package tatami.android.widget;
+package tatami.android.ui.widget;
 
 import android.text.SpannableStringBuilder;
 
