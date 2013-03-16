@@ -7,10 +7,15 @@ import tatami.android.model.StatusFactory;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,7 +104,8 @@ public class StatusesAdapter extends CursorAdapter {
 
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-		StatusTextViewMapper.getInstance(context).decorate(viewHolder.status, status);
+		StatusTextViewMapper.getInstance(context).decorate(viewHolder.status,
+				status);
 		buildAvatarTextView(view, viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
 	}
@@ -107,9 +113,19 @@ public class StatusesAdapter extends CursorAdapter {
 	public TextView buildInfoTextView(TextView infoTextView, Status status) {
 		infoTextView.setTextSize(12);
 
-		String html = status.getFirstName() + " " + status.getLastName();
+		String fullName = status.getFirstName() + " " + status.getLastName();
+		String username = status.getUsername();
 
-		infoTextView.setText(html);
+		String info = fullName + " @" + username;
+		SpannableStringBuilder ssb = new SpannableStringBuilder(info);
+
+		ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, fullName.length(), 0);
+		ssb.setSpan(new StyleSpan(Typeface.ITALIC), info.lastIndexOf('@'),
+				info.length(), 0);
+		ssb.setSpan(new AbsoluteSizeSpan(10, true), info.lastIndexOf('@'),
+				info.length(), 0);
+
+		infoTextView.setText(ssb, BufferType.SPANNABLE);
 
 		return infoTextView;
 	}
