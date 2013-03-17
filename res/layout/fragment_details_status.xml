@@ -13,7 +13,4 @@
         android:drawSelectorOnTop="false"
         android:showDividers="none"
         ptr:ptrMode="disabled" />
-
-
-
 </RelativeLayout>
