@@ -8,4 +8,5 @@ public class ClientURL {
 	public static String DETAILS	= "https://tatami.ippon.fr/tatami/rest/statuses/details/%s";
 	public static String UPDATE		= "https://tatami.ippon.fr/tatami/rest/statuses/update";
 	public static String DISCUSSION	= "https://tatami.ippon.fr/tatami/rest/statuses/discussion";
+	public static String WALL		= "https://tatami.ippon.fr/tatami/company";
 }

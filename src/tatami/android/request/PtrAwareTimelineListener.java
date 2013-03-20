@@ -5,13 +5,21 @@ import android.content.Context;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class PullToRefreshAwareTimelineListener extends TimelineListener {
+/**
+ * <p>
+ * Extends {@link TimelineListener} in order to be able to reset
+ * {@link PullToRefreshBase} state.
+ * </p>
+ * 
+ * @author pariviere
+ */
+public class PtrAwareTimelineListener extends TimelineListener {
 
 	private PullToRefreshBase<?> pullToRefresh;
 
-	public PullToRefreshAwareTimelineListener(Context context,
+	public PtrAwareTimelineListener(Context Context,
 			PullToRefreshBase<?> pullToRefresh) {
-		super(context);
+		super(Context);
 		this.pullToRefresh = pullToRefresh;
 	}
 

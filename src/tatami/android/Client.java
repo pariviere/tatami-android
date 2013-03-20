@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import tatami.android.model.Status;
+import tatami.android.request.ListStatus;
 
 import com.github.rjeschke.txtmark.Processor;
 
@@ -150,7 +150,7 @@ public class Client {
 		}
 	}
 
-	public List<Status> getDetails(String statusId) throws Exception {
+	public ListStatus getDetails(String statusId) throws Exception {
 		doAuthenticateIfNecessary();
 
 		URL details = new URL(String.format(ClientURL.DETAILS, statusId));
@@ -166,9 +166,9 @@ public class Client {
 			JSONObject jsonObj = new JSONObject(detailsContent);
 			JSONArray jsonArray = jsonObj.getJSONArray("discussionStatuses");
 
-			List<Status> statuses = jsonToStatuses(jsonArray);
+			ListStatus listStatus = jsonToStatuses(jsonArray);
 
-			return statuses;
+			return listStatus;
 		} finally {
 			discussionConnection.disconnect();
 		}
@@ -253,6 +253,31 @@ public class Client {
 		}
 	}
 
+	public List<Status> getWall() throws Exception {
+
+		doAuthenticateIfNecessary();
+
+		URL wall = new URL(ClientURL.WALL);
+
+		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection wallConnection = getHttpURLConnection(wall);
+
+		wallConnection.addRequestProperty("Accept", "application/json");
+
+		try {
+			String wallcontent = IOUtils.toString(wallConnection
+					.getInputStream());
+
+			JSONArray jsonArray = new JSONArray(wallcontent);
+
+			List<Status> statuses = jsonToStatuses(jsonArray);
+
+			return statuses;
+		} finally {
+			wallConnection.disconnect();
+		}
+	}
+
 	public List<Status> getTimeline(SimpleEntry<String, String>... params)
 			throws Exception {
 
@@ -316,9 +341,10 @@ public class Client {
 		return false;
 	}
 
-	public static List<Status> jsonToStatuses(JSONArray jsonArray)
+	public static ListStatus jsonToStatuses(JSONArray jsonArray)
 			throws Exception {
-		List<Status> statuses = new ArrayList<Status>();
+
+		ListStatus listStatus = new ListStatus();
 
 		for (int index = 0; index < jsonArray.length(); index++) {
 			JSONObject object = jsonArray.getJSONObject(index);
@@ -338,10 +364,10 @@ public class Client {
 			long epoch = object.getLong("statusDate");
 			status.setStatusDate(new Date(epoch));
 
-			statuses.add(status);
+			listStatus.add(status);
 		}
 
-		return statuses;
+		return listStatus;
 	}
 
 	/**

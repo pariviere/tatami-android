@@ -9,6 +9,7 @@ import tatami.android.request.AsyncRequestHandler;
 import tatami.android.request.ConversationDetailsListener;
 import tatami.android.request.ConversationDetailsRequest;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class DetailsActivity extends FragmentActivity {
 		Cursor cursor = this.getContentResolver().query(
 				UriBuilder.getStatusUri(id), null, null, null, null);
 
+		
 		if (cursor.getCount() != 0) {
 			Status status = StatusFactory.fromCursorRow(cursor);
 			forStatus = status;

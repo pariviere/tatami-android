@@ -4,18 +4,16 @@ import java.util.HashMap;
 
 import tatami.android.R;
 import tatami.android.content.UriBuilder;
+import tatami.android.events.RequestFailure;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
-import tatami.android.request.AsyncRequestHandler;
-import tatami.android.request.PullToRefreshAwareTimelineListener;
+import tatami.android.request.PtrAwareTimelineListener;
 import tatami.android.request.TimelineListener;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
-import tatami.android.ui.fragment.SideMenu;
 import tatami.android.ui.widget.StatusesAdapter;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,9 +22,11 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
-import com.slidingmenu.lib.SlidingMenu;
+
+import de.greenrobot.event.EventBus;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * <p>
@@ -35,11 +35,9 @@ import com.slidingmenu.lib.SlidingMenu;
  * 
  * @author pariviere
  */
-public class TimelineActivity extends FragmentActivity implements
+public class TimelineActivity extends BaseFragmentActivity implements
 		OnRefreshListener2<ListView> {
 	private final static String TAG = TimelineActivity.class.getSimpleName();
-	private SpiceManager spiceManager = new SpiceManager(
-			AsyncRequestHandler.class);
 
 	@Override
 	public void onCreate(Bundle bundle) {
@@ -48,19 +46,12 @@ public class TimelineActivity extends FragmentActivity implements
 		this.setTitle(R.string.title_activity_timeline);
 		setContentView(R.layout.activity_timeline);
 
-		// configure the SlidingMenu
-		SlidingMenu menu = new SlidingMenu(this);
-		menu.setMode(SlidingMenu.LEFT);
-		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
-		menu.setShadowWidth(15);
-		menu.setBehindOffset(60);
-		menu.setFadeDegree(0.35f);
-		menu.setMenu(R.layout.sidemenu_frame);
+		EventBus.getDefault().register(this);
+	}
 
-		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.menu_frame, new SideMenu()).commit();
-
+	public void onEventMainThread(RequestFailure requestFailure) {
+		Crouton.makeText(this, requestFailure.getThrowable().getMessage(),
+				Style.ALERT).show();
 	}
 
 	@Override
@@ -68,7 +59,7 @@ public class TimelineActivity extends FragmentActivity implements
 		getMenuInflater().inflate(R.menu.activity_timeline, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -84,7 +75,6 @@ public class TimelineActivity extends FragmentActivity implements
 
 	@Override
 	public void onStart() {
-		spiceManager.start(this);
 		super.onStart();
 
 		TimelineRequest request = new TimelineRequest(this,
@@ -97,7 +87,6 @@ public class TimelineActivity extends FragmentActivity implements
 
 	@Override
 	public void onStop() {
-		spiceManager.shouldStop();
 		super.onStop();
 	}
 
@@ -114,8 +103,8 @@ public class TimelineActivity extends FragmentActivity implements
 		HashMap<String, String> extra = new HashMap<String, String>();
 
 		TimelineRequest request = new TimelineRequest(this, extra);
-		TimelineListener listener = new PullToRefreshAwareTimelineListener(
-				this, refreshView);
+		TimelineListener listener = new PtrAwareTimelineListener(this,
+				refreshView);
 		spiceManager.execute(request, request.toString(),
 				DurationInMillis.ONE_MINUTE, listener);
 	}
@@ -142,8 +131,8 @@ public class TimelineActivity extends FragmentActivity implements
 			extra.put(SyncMeta.BEFORE_ID, statusId);
 
 			TimelineRequest request = new TimelineRequest(this, extra);
-			TimelineListener listener = new PullToRefreshAwareTimelineListener(
-					this, refreshView);
+			TimelineListener listener = new PtrAwareTimelineListener(this,
+					refreshView);
 
 			spiceManager.execute(request, request.toString(),
 					DurationInMillis.ONE_MINUTE, listener);

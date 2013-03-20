@@ -2,12 +2,14 @@ package tatami.android.model;
 
 import java.util.Date;
 
+import android.content.ContentValues;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "status")
-public class Status {
+public class Status  {
 
 	@DatabaseField(columnName = "_id", generatedId = true)
 	private long id;

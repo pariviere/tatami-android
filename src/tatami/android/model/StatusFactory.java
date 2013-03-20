@@ -49,7 +49,6 @@ public class StatusFactory {
 		String lastName = cursor.getString(cursor.getColumnIndex("lastName"));
 		String firstName = cursor.getString(cursor.getColumnIndex("firstName"));
 		String htmlContent = cursor.getString(cursor.getColumnIndex("htmlContent"));
-
 		
 		Status status = new Status();
 		status.setStatusId(statusId);

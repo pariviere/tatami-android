@@ -31,7 +31,10 @@ public class SideMenu extends ListFragment {
 		super.onActivityCreated(savedInstanceState);
 
 		SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(getActivity());
-		menuAdapter.add(new SlidingMenuItem("Timeline", android.R.drawable.ic_menu_myplaces));
+		menuAdapter.add(new SlidingMenuItem("Timeline",
+				android.R.drawable.ic_menu_myplaces));
+		menuAdapter.add(new SlidingMenuItem("Wall",
+				android.R.drawable.ic_menu_mylocation));
 
 		setListAdapter(menuAdapter);
 
