@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/robospice-1.4.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/robospice-cache-1.4.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/crouton-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/timeago-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

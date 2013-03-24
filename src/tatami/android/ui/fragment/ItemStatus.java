@@ -24,15 +24,20 @@ public class ItemStatus extends Fragment {
 	ImageView avatar;
 	TextView status;
 	TextView info;
+	TextView date;
+	TextView replyTo;
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.list_status, container, false);
+		View view = inflater.inflate(R.layout.display_status, container, false);
 
 		avatar = (ImageView) view.findViewById(R.id.avatar);
 		status = (TextView) view.findViewById(R.id.status);
 		info = (TextView) view.findViewById(R.id.info);
+		date = (TextView)view.findViewById(R.id.date);
+		replyTo = (TextView)view.findViewById(R.id.replyTo);
 
 		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_layout);
 
@@ -56,6 +61,8 @@ public class ItemStatus extends Fragment {
 			viewHolder.avatar = avatar;
 			viewHolder.status = status;
 			viewHolder.info = info;
+			viewHolder.date = date;
+			viewHolder.replyTo = replyTo;
 
 			rowView.setTag(viewHolder);
 

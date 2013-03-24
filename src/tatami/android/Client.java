@@ -355,6 +355,13 @@ public class Client {
 			status.setUsername(object.getString("username"));
 			status.setGravatar(object.getString("gravatar"));
 			status.setFirstName(object.getString("firstName"));
+			status.setFavorite(object.getBoolean("favorite"));
+			status.setGroupId(object.getString("groupId"));
+			status.setGroupName(object.getString("groupName"));
+			status.setGroupPublic(object.getBoolean("publicGroup"));
+			status.setReplyToId(object.getString("replyTo"));
+			status.setReplyToUsername(object.getString("replyToUsername"));
+			status.setPrivate(object.getBoolean("statusPrivate"));
 
 			String content = object.getString("content");
 			status.setContent(content);

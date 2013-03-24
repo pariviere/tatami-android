@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 
 /**
  * 
@@ -21,6 +22,13 @@ public class StatusFactory {
 		status.setGravatar(contentValues.getAsString("gravatar"));
 		status.setHtmlContent(contentValues.getAsString("htmlContent"));
 		status.setStatusDate(new Date(contentValues.getAsLong("statusDate")));
+		status.setFavorite(contentValues.getAsBoolean("favorite"));
+		status.setGroupId(contentValues.getAsString("groupId"));
+		status.setGroupName(contentValues.getAsString("groupName"));
+		status.setGroupPublic(contentValues.getAsBoolean("groupPublic"));
+		status.setReplyToId(contentValues.getAsString("replyToId"));
+		status.setReplyToUsername(contentValues.getAsString("replyToUsername"));
+		status.setPrivate(contentValues.getAsBoolean("private"));
 
 		return status;
 	}
@@ -37,29 +45,22 @@ public class StatusFactory {
 		values.put("statusDate", status.getStatusDate().getTime());
 		values.put("gravatar", status.getGravatar());
 		values.put("htmlContent", status.getHtmlContent());
-
+		values.put("favorite", status.isFavorite());
+		values.put("groupId", status.getGroupId());
+		values.put("groupName", status.getGroupName());
+		values.put("groupPublic", status.isGroupPublic());
+		values.put("replyToId", status.getReplyToId());
+		values.put("replyToUsername", status.getReplyToUsername());
+		values.put("private", status.isPrivate());
+		
 		return values;
 	}
 
 	public static Status fromCursorRow(Cursor cursor) {
-		String statusId = cursor.getString(cursor.getColumnIndex("statusId"));
-		String username = cursor.getString(cursor.getColumnIndex("username"));
-		String content = cursor.getString(cursor.getColumnIndex("content"));
-		String gravatar = cursor.getString(cursor.getColumnIndex("gravatar"));
-		String lastName = cursor.getString(cursor.getColumnIndex("lastName"));
-		String firstName = cursor.getString(cursor.getColumnIndex("firstName"));
-		String htmlContent = cursor.getString(cursor.getColumnIndex("htmlContent"));
 		
-		Status status = new Status();
-		status.setStatusId(statusId);
-		status.setContent(content);
-		status.setUsername(username);
-		status.setStatusDate(new Date());
-		status.setGravatar(gravatar);
-		status.setLastName(lastName);
-		status.setFirstName(firstName);
-		status.setHtmlContent(htmlContent);
-
-		return status;
+		ContentValues values = new ContentValues();
+		DatabaseUtils.cursorRowToContentValues(cursor, values);
+		
+		return from(values);
 	}
 }

@@ -1,22 +1,19 @@
 package tatami.android.ui.widget;
 
-import net.nightwhistler.htmlspanner.HtmlSpanner;
+import org.apache.commons.lang3.StringUtils;
+
 import tatami.android.R;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.support.v4.util.LruCache;
+import android.opengl.Visibility;
 import android.support.v4.widget.CursorAdapter;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +25,7 @@ import android.widget.TextView.BufferType;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.ImageOptions;
+import com.github.kevinsawicki.timeago.TimeAgo;
 
 /**
  * <p>
@@ -41,32 +39,18 @@ import com.androidquery.callback.ImageOptions;
 public class StatusesAdapter extends CursorAdapter {
 	private static String TAG = StatusesAdapter.class.getSimpleName();
 
-	private int selected = -1;
-	private HtmlSpanner htmlSpanner;
 	private ImageOptions imageOptions;
-	private Context context;
-	private LruCache<String, SpannableStringBuilder> spanCache;
 
 	public static class ViewHolder {
 		public ImageView avatar;
 		public TextView status;
 		public TextView info;
-	}
-
-	public int getSelected() {
-		return selected;
-	}
-
-	public void setSelected(int selected) {
-		this.selected = selected;
+		public TextView date;
+		public TextView replyTo;
 	}
 
 	public StatusesAdapter(Context context, Cursor c) {
 		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		this.context = context;
-		spanCache = new LruCache<String, SpannableStringBuilder>(50);
-
-		htmlSpanner = new HtmlSpanner();
 		initAquery();
 	}
 
@@ -86,12 +70,14 @@ public class StatusesAdapter extends CursorAdapter {
 		View rowView = null;
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		rowView = inflater.inflate(R.layout.list_status, null);
+		rowView = inflater.inflate(R.layout.display_status, null);
 
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.avatar = (ImageView) rowView.findViewById(R.id.avatar);
 		viewHolder.status = (TextView) rowView.findViewById(R.id.status);
 		viewHolder.info = (TextView) rowView.findViewById(R.id.info);
+		viewHolder.date = (TextView) rowView.findViewById(R.id.date);
+		viewHolder.replyTo = (TextView) rowView.findViewById(R.id.replyTo);
 
 		rowView.setTag(viewHolder);
 
@@ -108,6 +94,32 @@ public class StatusesAdapter extends CursorAdapter {
 				status);
 		buildAvatarTextView(view, viewHolder.avatar, status);
 		buildInfoTextView(viewHolder.info, status);
+		buildDateTextView(viewHolder.date, status);
+		buildReplyToTextView(viewHolder.replyTo, status);
+	}
+	
+	public TextView buildReplyToTextView(TextView replyToView, Status status) {
+		
+
+		String replyToUsername = status.getReplyToUsername();
+		
+		if (StringUtils.isNotEmpty(replyToUsername)) {
+			replyToView.setText("in reply to @" + replyToUsername);
+			replyToView.setVisibility(View.VISIBLE);
+		} else {
+			replyToView.setVisibility(View.GONE);
+		}
+		return replyToView;
+	}
+
+	public TextView buildDateTextView(TextView dateTextView, Status status) {
+
+		TimeAgo timeAgo = new TimeAgo();
+		String since = timeAgo.timeAgo(status.getStatusDate());
+		
+		dateTextView.setText(since);
+
+		return dateTextView;
 	}
 
 	public TextView buildInfoTextView(TextView infoTextView, Status status) {
