@@ -75,7 +75,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		TimelineListener listener = new TimelineListener(context);
 
 		try {
-			ListStatus listStatus = request.doLoadDataFromNetwork();
+			ListStatus listStatus = request.loadDataFromNetwork();
 			listener.onRequestSuccess(listStatus);
 			notifyNewStatus(listStatus);
 			syncResult.stats.numUpdates++;

@@ -38,7 +38,6 @@ public class ComposeSync extends IntentService {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			AppState app = (AppState) getApplication();
-
 		}
 	}
 

@@ -81,7 +81,5 @@ public class StatusTextViewMapper {
 		textView.setText(ssb, BufferType.SPANNABLE);
 		textView.setMovementMethod(null);
 		textView.setOnTouchListener(new LinkDetectionListener());
-
-		textView.setTextSize(14);
 	}
 }

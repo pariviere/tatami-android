@@ -9,7 +9,6 @@ import tatami.android.request.AsyncRequestHandler;
 import tatami.android.request.ConversationDetailsListener;
 import tatami.android.request.ConversationDetailsRequest;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -44,11 +43,12 @@ public class DetailsActivity extends FragmentActivity {
 		Cursor cursor = this.getContentResolver().query(
 				UriBuilder.getStatusUri(id), null, null, null, null);
 
-		
 		if (cursor.getCount() != 0) {
 			Status status = StatusFactory.fromCursorRow(cursor);
 			forStatus = status;
 			Log.d(TAG, "Launch details for status : " + forStatus.toString());
+
+			this.setTitle(String.format("@%s says...", status.getUsername()));
 		} else {
 			Toast.makeText(this, "No status found?!", Toast.LENGTH_LONG).show();
 			this.finish();
@@ -66,7 +66,7 @@ public class DetailsActivity extends FragmentActivity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
-			
+
 			return true;
 
 		case R.id.menu_compose:

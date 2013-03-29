@@ -21,6 +21,8 @@ public class TriggerSync extends IntentService {
 
 	public TriggerSync() {
 		super(TriggerSync.class.getName());
+		
+		
 	}
 
 	@Override

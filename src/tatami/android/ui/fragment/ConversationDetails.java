@@ -29,9 +29,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
  * 
  * @author pariviere
  */
-public class ConversationDetailsFragment extends ListFragment implements
+public class ConversationDetails extends ListFragment implements
 		LoaderCallbacks<Cursor> {
-	private final static String TAG = ConversationDetailsFragment.class
+	private final static String TAG = ConversationDetails.class
 			.getSimpleName();
 
 	private StatusesAdapter statusesAdapter = null;
@@ -83,7 +83,7 @@ public class ConversationDetailsFragment extends ListFragment implements
 		cursor.close();
 
 		getLoaderManager().initLoader(
-				ConversationDetailsFragment.class.hashCode(), null, this);
+				ConversationDetails.class.hashCode(), null, this);
 
 		return view;
 	}

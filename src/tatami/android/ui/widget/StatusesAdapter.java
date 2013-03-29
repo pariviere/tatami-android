@@ -123,8 +123,6 @@ public class StatusesAdapter extends CursorAdapter {
 	}
 
 	public TextView buildInfoTextView(TextView infoTextView, Status status) {
-		infoTextView.setTextSize(12);
-
 		String fullName = status.getFirstName() + " " + status.getLastName();
 		String username = status.getUsername();
 

@@ -39,19 +39,21 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/status"
+            android:layout_alignBottom="@+id/info"
             android:layout_alignParentRight="true"
             android:text="@+id/date"
-            android:textSize="8sp" />
+            android:textSize="12sp"
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/info"
+            android:layout_below="@+id/date"
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
             android:layout_toRightOf="@+id/avatar"
+            android:textSize="16sp"
             android:text="@+id/label" />
 
         <TextView
@@ -64,7 +66,6 @@
             android:text="@+id/replyTo"
             android:textSize="12sp"
             android:textStyle="italic" />
-
     </RelativeLayout>
 
 </RelativeLayout>

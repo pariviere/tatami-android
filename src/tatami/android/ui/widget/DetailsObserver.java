@@ -1,13 +1,13 @@
 package tatami.android.ui.widget;
 
-import tatami.android.ui.fragment.ConversationDetailsFragment;
+import tatami.android.ui.fragment.ConversationDetails;
 import android.database.ContentObserver;
 import android.net.Uri;
 
 public class DetailsObserver extends ContentObserver {
-	ConversationDetailsFragment detailsStatus;
+	ConversationDetails detailsStatus;
 
-	public DetailsObserver(ConversationDetailsFragment detailsStatus) {
+	public DetailsObserver(ConversationDetails detailsStatus) {
 		super(null);
 		this.detailsStatus = detailsStatus;
 	}
