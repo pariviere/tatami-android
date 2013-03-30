@@ -7,13 +7,13 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 
 /**
  * <p>
- * Extends {@link TimelineListener} in order to be able to reset
+ * Extends {@link PersistTimeline} in order to be able to reset
  * {@link PullToRefreshBase} state.
  * </p>
  * 
  * @author pariviere
  */
-public class PtrAwareTimelineListener extends TimelineListener {
+public class PtrAwareTimelineListener extends PersistTimeline {
 
 	private PullToRefreshBase<?> pullToRefresh;
 

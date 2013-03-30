@@ -2,17 +2,16 @@ package tatami.android.ui.fragment;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.content.UriBuilder;
+import tatami.android.content.StatusLoader;
+import tatami.android.events.PersistTimelineDone;
 import tatami.android.ui.DetailsActivity;
 import tatami.android.ui.TimelineActivity;
 import tatami.android.ui.widget.StatusesAdapter;
-import tatami.android.ui.widget.StatusesObserver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * <p>
@@ -34,7 +35,6 @@ public class StatusesList extends ListFragment implements
 
 	private StatusesAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
-	private StatusesObserver observer = null;
 
 	public StatusesAdapter getStatusesAdapter() {
 		return statusesAdapter;
@@ -47,6 +47,12 @@ public class StatusesList extends ListFragment implements
 	public void stopLoading() {
 		getLoaderManager().restartLoader(StatusesList.class.hashCode(), null,
 				this);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		EventBus.getDefault().register(this);
 	}
 
 	@Override
@@ -92,13 +98,8 @@ public class StatusesList extends ListFragment implements
 
 		this.pullToRefreshListView.getRefreshableView().setItemsCanFocus(true);
 
-		
-		
-		observer = new StatusesObserver(this);
-		this.pullToRefreshListView.setOnRefreshListener((TimelineActivity)getActivity());
-
-		getActivity().getContentResolver().registerContentObserver(
-				UriBuilder.getFullUri(), false, observer);
+		this.pullToRefreshListView
+				.setOnRefreshListener((TimelineActivity) getActivity());
 
 		getLoaderManager()
 				.initLoader(StatusesList.class.hashCode(), null, this);
@@ -109,11 +110,15 @@ public class StatusesList extends ListFragment implements
 		return view;
 	}
 
+	public void onEventMainThread(PersistTimelineDone done) {
+		stopLoading();
+	}
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, "Loading cursor");
-		return new CursorLoader(getActivity(), UriBuilder.getFullUri(), null,
-				null, null, null);
+		Loader<Cursor> cursorLoader = new StatusLoader(getActivity());
+
+		return cursorLoader;
 	}
 
 	@Override

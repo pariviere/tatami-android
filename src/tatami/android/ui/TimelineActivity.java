@@ -8,7 +8,7 @@ import tatami.android.events.RequestFailure;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import tatami.android.request.PtrAwareTimelineListener;
-import tatami.android.request.TimelineListener;
+import tatami.android.request.PersistTimeline;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
 import tatami.android.ui.widget.StatusesAdapter;
@@ -79,7 +79,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 
 		TimelineRequest request = new TimelineRequest(this,
 				new HashMap<String, String>());
-		TimelineListener listener = new TimelineListener(this);
+		PersistTimeline listener = new PersistTimeline(this);
 
 		spiceManager.execute(request, request.toString(),
 				DurationInMillis.ONE_MINUTE, listener);
@@ -103,7 +103,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 		HashMap<String, String> extra = new HashMap<String, String>();
 
 		TimelineRequest request = new TimelineRequest(this, extra);
-		TimelineListener listener = new PtrAwareTimelineListener(this,
+		PersistTimeline listener = new PtrAwareTimelineListener(this,
 				refreshView);
 		spiceManager.execute(request, request.toString(),
 				DurationInMillis.ONE_MINUTE, listener);
@@ -131,7 +131,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 			extra.put(SyncMeta.BEFORE_ID, statusId);
 
 			TimelineRequest request = new TimelineRequest(this, extra);
-			TimelineListener listener = new PtrAwareTimelineListener(this,
+			PersistTimeline listener = new PtrAwareTimelineListener(this,
 					refreshView);
 
 			spiceManager.execute(request, request.toString(),

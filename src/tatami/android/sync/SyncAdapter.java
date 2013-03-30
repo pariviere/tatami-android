@@ -5,7 +5,7 @@ import java.util.HashMap;
 import tatami.android.R;
 import tatami.android.model.Status;
 import tatami.android.request.ListStatus;
-import tatami.android.request.TimelineListener;
+import tatami.android.request.PersistTimeline;
 import tatami.android.request.TimelineRequest;
 import tatami.android.ui.TimelineActivity;
 import android.accounts.Account;
@@ -72,7 +72,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		Context context = this.getContext();
 		TimelineRequest request = new TimelineRequest(context,
 				new HashMap<String, String>());
-		TimelineListener listener = new TimelineListener(context);
+		PersistTimeline listener = new PersistTimeline(context);
 
 		try {
 			ListStatus listStatus = request.loadDataFromNetwork();

@@ -6,7 +6,7 @@ import tatami.android.content.UriBuilder;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
 import tatami.android.request.AsyncRequestHandler;
-import tatami.android.request.ConversationDetailsListener;
+import tatami.android.request.PersistConversation;
 import tatami.android.request.ConversationDetailsRequest;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -88,7 +88,7 @@ public class DetailsActivity extends FragmentActivity {
 
 		ConversationDetailsRequest request = new ConversationDetailsRequest(
 				this, forStatus.getStatusId());
-		ConversationDetailsListener listener = new ConversationDetailsListener(
+		PersistConversation listener = new PersistConversation(
 				this);
 
 		spiceManager.execute(request, request.toString(),
