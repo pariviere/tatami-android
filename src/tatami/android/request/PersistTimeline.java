@@ -51,7 +51,6 @@ public class PersistTimeline implements RequestListener<ListStatus> {
 				if (statusDao.queryForEq("statusId", statusId).isEmpty()) {
 					statusDao.create(status);
 				}
-				EventBus.getDefault().post(new NewStatus(status));
 			}
 		} catch (SQLException se) {
 			Log.e(TAG, "", se);

@@ -50,12 +50,6 @@ public class StatusesList extends ListFragment implements
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		EventBus.getDefault().register(this);
-	}
-
-	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(StatusesList.this.getActivity()
 				.getApplicationContext(), DetailsActivity.class);
@@ -110,6 +104,19 @@ public class StatusesList extends ListFragment implements
 		return view;
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		EventBus.getDefault().register(this);
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		EventBus.getDefault().unregister(this);
+	}
+	
+	
 	public void onEventMainThread(PersistTimelineDone done) {
 		stopLoading();
 	}

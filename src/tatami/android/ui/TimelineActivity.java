@@ -45,10 +45,10 @@ public class TimelineActivity extends BaseFragmentActivity implements
 		super.onCreate(bundle);
 		this.setTitle(R.string.title_activity_timeline);
 		setContentView(R.layout.activity_timeline);
-
-		EventBus.getDefault().register(this);
 	}
+	
 
+	
 	public void onEventMainThread(RequestFailure requestFailure) {
 		Crouton.makeText(this, requestFailure.getThrowable().getMessage(),
 				Style.ALERT).show();
@@ -77,6 +77,8 @@ public class TimelineActivity extends BaseFragmentActivity implements
 	public void onStart() {
 		super.onStart();
 
+		EventBus.getDefault().register(this);
+		
 		TimelineRequest request = new TimelineRequest(this,
 				new HashMap<String, String>());
 		PersistTimeline listener = new PersistTimeline(this);
@@ -87,6 +89,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 
 	@Override
 	public void onStop() {
+		EventBus.getDefault().unregister(this);
 		super.onStop();
 	}
 

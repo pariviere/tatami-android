@@ -55,11 +55,6 @@ public class ConversationDetails extends ListFragment implements
 		}
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		EventBus.getDefault().register(this);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,6 +88,18 @@ public class ConversationDetails extends ListFragment implements
 				null, this);
 
 		return view;
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		EventBus.getDefault().register(this);
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		EventBus.getDefault().unregister(this);
 	}
 
 	public void onEventMainThread(PersistConversationDone done) {
