@@ -3,7 +3,6 @@ package tatami.android.request;
 import java.sql.SQLException;
 
 import tatami.android.content.DbHelper;
-import tatami.android.events.NewStatus;
 import tatami.android.events.PersistConversationDone;
 import tatami.android.model.Details;
 import tatami.android.model.Status;
@@ -49,24 +48,22 @@ public class PersistConversation implements
 
 			for (Status status : listStatus) {
 				//
-				String statusId = status.getStatusId();				
+				String statusId = status.getStatusId();
 				if (statusDao.queryForEq("statusId", statusId).isEmpty()) {
 					statusDao.create(status);
-					EventBus.getDefault().post(new NewStatus(status));
 				}
-				
-				
+
 				//
 				QueryBuilder<Details, String> detailsBuilder = detailsDao
 						.queryBuilder();
 				detailsBuilder.where().eq("detailsId", forStatusId).and()
 						.eq("statusId", statusId).query();
-				
+
 				if (detailsBuilder.query().isEmpty()) {
 					Details details = new Details();
 					details.setDetailsId(forStatusId);
 					details.setStatusId(statusId);
-					
+
 					detailsDao.create(details);
 				}
 			}

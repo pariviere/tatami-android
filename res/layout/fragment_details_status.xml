@@ -12,5 +12,18 @@
         android:background="#EEE"
         android:drawSelectorOnTop="false"
         android:showDividers="none"
-        ptr:ptrMode="disabled" />
+        ptr:ptrMode="disabled" >
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
+
+    <TextView
+        android:id="@id/android:empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/secondary_text_dark"
+        android:text="Nothing to display"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="italic" />
+
 </RelativeLayout>

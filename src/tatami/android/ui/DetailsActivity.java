@@ -2,22 +2,19 @@ package tatami.android.ui;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.content.UriBuilder;
+import tatami.android.content.DbHelper;
 import tatami.android.model.Status;
-import tatami.android.model.StatusFactory;
-import tatami.android.request.AsyncRequestHandler;
-import tatami.android.request.PersistConversation;
 import tatami.android.request.ConversationDetailsRequest;
-import android.database.Cursor;
+import tatami.android.request.PersistConversation;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * <p>
@@ -25,10 +22,8 @@ import com.octo.android.robospice.persistence.DurationInMillis;
  * 
  * @author pariviere
  */
-public class DetailsActivity extends FragmentActivity {
+public class DetailsActivity extends BaseFragmentActivity {
 	private final static String TAG = DetailsActivity.class.getSimpleName();
-	private SpiceManager spiceManager = new SpiceManager(
-			AsyncRequestHandler.class);
 
 	private Status forStatus;
 
@@ -40,18 +35,18 @@ public class DetailsActivity extends FragmentActivity {
 
 		long id = this.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 
-		Cursor cursor = this.getContentResolver().query(
-				UriBuilder.getStatusUri(id), null, null, null, null);
+		DbHelper helper = DbHelper.getDbHelpder(this);
+		forStatus = helper.getStatus(id);
 
-		if (cursor.getCount() != 0) {
-			Status status = StatusFactory.fromCursorRow(cursor);
-			forStatus = status;
-			Log.d(TAG, "Launch details for status : " + forStatus.toString());
-
-			this.setTitle(String.format("@%s says...", status.getUsername()));
+		if (forStatus == null) {
+			String msg = TAG + " requires a specific status.";
+			Crouton.makeText(this, msg, Style.ALERT);
+			Log.e(TAG, msg);
 		} else {
-			Toast.makeText(this, "No status found?!", Toast.LENGTH_LONG).show();
-			this.finish();
+			Log.d(TAG, "Launch details for status : " + forStatus.toString());
+			String title = String
+					.format("@%s says...", forStatus.getUsername());
+			setTitle(title);
 		}
 	}
 
@@ -83,22 +78,14 @@ public class DetailsActivity extends FragmentActivity {
 
 	@Override
 	public void onStart() {
-		spiceManager.start(this);
 		super.onStart();
 
 		ConversationDetailsRequest request = new ConversationDetailsRequest(
 				this, forStatus.getStatusId());
-		PersistConversation listener = new PersistConversation(
-				this);
+		PersistConversation listener = new PersistConversation(this);
 
 		spiceManager.execute(request, request.toString(),
 				DurationInMillis.ONE_MINUTE * 2, listener);
-	}
-
-	@Override
-	public void onStop() {
-		spiceManager.shouldStop();
-		super.onStop();
 	}
 
 }

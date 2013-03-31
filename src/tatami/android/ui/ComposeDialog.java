@@ -1,20 +1,19 @@
 package tatami.android.ui;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import tatami.android.AppState;
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.R.id;
-import tatami.android.R.layout;
-import tatami.android.content.UriBuilder;
+import tatami.android.content.DbHelper;
 import tatami.android.model.Status;
-import tatami.android.model.StatusFactory;
 import tatami.android.task.SendUpdate;
 import tatami.android.task.UpdateListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
@@ -24,6 +23,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
 
 /**
  * <p>
@@ -53,16 +55,25 @@ public class ComposeDialog extends DialogFragment {
 		// if arguments => statusId selected
 		if (getArguments() != null) {
 			selectedStatusId = getArguments().getString(Constants.STATUS_PARAM);
-			if (selectedStatusId != null) {
-				Cursor cursor = getActivity().getContentResolver().query(
-						UriBuilder.getStatusUri(selectedStatusId), null, null,
-						null, null);
 
-				if (cursor.getCount() != 0) {
-					Status status = StatusFactory.fromCursorRow(cursor);
-					String username = status.getUsername();
-					composeEdit.setText("@" + username + " ");
-					composeEdit.setSelection(composeEdit.length());
+			if (selectedStatusId != null) {
+				DbHelper helper = OpenHelperManager.getHelper(getActivity(),
+						DbHelper.class);
+
+				try {
+					Dao<Status, String> statusDao = helper.getDao(Status.class);
+
+					List<Status> result = statusDao.queryForEq("statusId",
+							selectedStatusId);
+
+					if (!result.isEmpty()) {
+						Status status = result.get(0);
+						String username = status.getUsername();
+						composeEdit.setText("@" + username + " ");
+						composeEdit.setSelection(composeEdit.length());
+					}
+				} catch (SQLException se) {
+					se.printStackTrace();
 				}
 			}
 		}

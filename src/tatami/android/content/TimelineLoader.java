@@ -8,20 +8,16 @@ import android.util.Log;
 
 /**
  * <p>
- * Implementation of {@link AsyncTaskLoader} to load conversation form database.
- * It requires a {@link Status} form which to load conversation.
+ * Implementation of {@link AsyncTaskLoader} to {@link Status}es form database.
  * </p>
  * 
  * @author pariviere
  */
-public class ConversationLoader extends AsyncTaskLoader<Cursor> {
-	private final static String TAG = ConversationLoader.class.getSimpleName();
+public class TimelineLoader extends AsyncTaskLoader<Cursor> {
+	private final static String TAG = TimelineLoader.class.getSimpleName();
 
-	public Status forStatus;
-
-	public ConversationLoader(Context context, Status forStatus) {
+	public TimelineLoader(Context context) {
 		super(context);
-		this.forStatus = forStatus;
 	}
 
 	@Override
@@ -34,6 +30,7 @@ public class ConversationLoader extends AsyncTaskLoader<Cursor> {
 	@Override
 	public Cursor loadInBackground() {
 		DbHelper helper = DbHelper.getDbHelpder(getContext());
-		return helper.findConversationForStatus(forStatus);
+		return helper.findTimeline();
 	}
+
 }

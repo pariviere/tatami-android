@@ -3,7 +3,6 @@ package tatami.android.request;
 import java.sql.SQLException;
 
 import tatami.android.content.DbHelper;
-import tatami.android.events.NewStatus;
 import tatami.android.events.PersistTimelineDone;
 import tatami.android.events.RequestFailure;
 import tatami.android.model.Status;

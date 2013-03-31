@@ -1,6 +1,5 @@
 package tatami.android.account;
 
-import tatami.android.Constants;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;

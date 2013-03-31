@@ -7,8 +7,8 @@ import tatami.android.content.UriBuilder;
 import tatami.android.events.RequestFailure;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
-import tatami.android.request.PtrAwareTimelineListener;
 import tatami.android.request.PersistTimeline;
+import tatami.android.request.PtrAwareTimelineListener;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
 import tatami.android.ui.widget.StatusesAdapter;
@@ -24,7 +24,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.octo.android.robospice.persistence.DurationInMillis;
 
-import de.greenrobot.event.EventBus;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -46,13 +45,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 		this.setTitle(R.string.title_activity_timeline);
 		setContentView(R.layout.activity_timeline);
 	}
-	
 
-	
-	public void onEventMainThread(RequestFailure requestFailure) {
-		Crouton.makeText(this, requestFailure.getThrowable().getMessage(),
-				Style.ALERT).show();
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,8 +69,6 @@ public class TimelineActivity extends BaseFragmentActivity implements
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		EventBus.getDefault().register(this);
 		
 		TimelineRequest request = new TimelineRequest(this,
 				new HashMap<String, String>());
@@ -85,12 +76,6 @@ public class TimelineActivity extends BaseFragmentActivity implements
 
 		spiceManager.execute(request, request.toString(),
 				DurationInMillis.ONE_MINUTE, listener);
-	}
-
-	@Override
-	public void onStop() {
-		EventBus.getDefault().unregister(this);
-		super.onStop();
 	}
 
 	@Override

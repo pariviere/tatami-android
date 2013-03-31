@@ -2,7 +2,7 @@ package tatami.android.ui.fragment;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.content.StatusLoader;
+import tatami.android.content.TimelineLoader;
 import tatami.android.events.PersistTimelineDone;
 import tatami.android.ui.DetailsActivity;
 import tatami.android.ui.TimelineActivity;
@@ -123,7 +123,7 @@ public class StatusesList extends ListFragment implements
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Loader<Cursor> cursorLoader = new StatusLoader(getActivity());
+		Loader<Cursor> cursorLoader = new TimelineLoader(getActivity());
 
 		return cursorLoader;
 	}

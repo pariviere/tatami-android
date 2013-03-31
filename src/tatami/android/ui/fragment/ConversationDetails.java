@@ -1,8 +1,5 @@
 package tatami.android.ui.fragment;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import tatami.android.Constants;
 import tatami.android.R;
 import tatami.android.content.ConversationLoader;
@@ -22,10 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
 
 import de.greenrobot.event.EventBus;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * <p>
@@ -47,14 +44,14 @@ public class ConversationDetails extends ListFragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "Loading cursor");
 		if (forStatus != null) {
-			Loader<Cursor> cursorLoader = new ConversationLoader(getActivity(), forStatus);
+			Loader<Cursor> cursorLoader = new ConversationLoader(getActivity(),
+					forStatus);
 			return cursorLoader;
 		} else {
 			Log.e(TAG, "No status selected? How can I display a conversation?");
 			return null;
 		}
 	}
-
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,17 +68,13 @@ public class ConversationDetails extends ListFragment implements
 		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
 		Log.d(TAG, "Selected status primary key is  " + id);
 
-		DbHelper helper = OpenHelperManager.getHelper(getActivity(),
-				DbHelper.class);
-		try {
-			Dao<Status, String> statusDao = helper.getStatusDao();
-			
-			List<Status> result = statusDao.queryForEq("_id", id);			
-			if (!result.isEmpty()) {
-				forStatus = result.get(0);
-			}
-		} catch (SQLException se) {
-			se.printStackTrace();
+		DbHelper helper = DbHelper.getDbHelpder(getActivity());
+		forStatus = helper.getStatus(id);
+
+		if (forStatus == null) {
+			String msg = TAG + " requires a specific status.";
+			Crouton.makeText(getActivity(), msg, Style.ALERT);
+			Log.e(TAG, msg);
 		}
 
 		getLoaderManager().initLoader(ConversationDetails.class.hashCode(),
@@ -89,13 +82,13 @@ public class ConversationDetails extends ListFragment implements
 
 		return view;
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
 		EventBus.getDefault().register(this);
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
