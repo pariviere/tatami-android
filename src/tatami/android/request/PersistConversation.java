@@ -1,7 +1,5 @@
 package tatami.android.request;
 
-import java.sql.SQLException;
-
 import tatami.android.content.DbHelper;
 import tatami.android.events.PersistConversationDone;
 import tatami.android.model.Details;
@@ -9,8 +7,6 @@ import tatami.android.model.Status;
 import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -39,37 +35,44 @@ public class PersistConversation implements
 
 	@Override
 	public void onRequestSuccess(ConversationDetails conversationDetails) {
-		try {
-			Dao<Status, String> statusDao = helper.getStatusDao();
-			Dao<Details, String> detailsDao = helper.getDetailsDao();
+		DbHelper helper = DbHelper.getDbHelpder(context);
 
-			String forStatusId = conversationDetails.getForStatusId();
-			ListStatus listStatus = conversationDetails.getConversation();
+		String forStatusId = conversationDetails.getForStatusId();
+		ListStatus listStatus = conversationDetails.getConversation();
 
-			for (Status status : listStatus) {
-				//
-				String statusId = status.getStatusId();
-				if (statusDao.queryForEq("statusId", statusId).isEmpty()) {
-					statusDao.create(status);
-				}
+		for (Status status : listStatus) {
+			helper.createStatus(status);
 
-				//
-				QueryBuilder<Details, String> detailsBuilder = detailsDao
-						.queryBuilder();
-				detailsBuilder.where().eq("detailsId", forStatusId).and()
-						.eq("statusId", statusId).query();
+			String statusId = status.getStatusId();
 
-				if (detailsBuilder.query().isEmpty()) {
-					Details details = new Details();
-					details.setDetailsId(forStatusId);
-					details.setStatusId(statusId);
+			// current status IS part of
+			// the selected status conversation
+			Details details = new Details();
+			details.setDetailsId(forStatusId);
+			details.setStatusId(statusId);
+			helper.createDetails(details);
 
-					detailsDao.create(details);
+			// the reverse is also true.
+			// the select status IS part of
+			// the current status conversation
+			Details reverse = new Details();
+			reverse.setDetailsId(statusId);
+			reverse.setStatusId(forStatusId);
+			helper.createDetails(reverse);
+
+			for (Status reserveStatus : listStatus) {
+				// BUT the whole status list is ALSO
+				// part of the current status conversation
+				if (reserveStatus != status) {
+					Details reverseDetails = new Details();
+					reverseDetails.setDetailsId(statusId);
+					reverseDetails.setStatusId(reserveStatus.getStatusId());
+
+					helper.createDetails(reverseDetails);
 				}
 			}
-			EventBus.getDefault().post(new PersistConversationDone());
-		} catch (SQLException se) {
-			se.printStackTrace();
 		}
+
+		EventBus.getDefault().post(new PersistConversationDone());
 	}
 }

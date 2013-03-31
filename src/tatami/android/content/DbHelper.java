@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import tatami.android.events.NewDetails;
+import tatami.android.events.NewStatus;
 import tatami.android.events.QueryFailure;
 import tatami.android.model.Details;
 import tatami.android.model.Status;
@@ -94,7 +96,73 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	
+	/**
+	 * 
+	 * @param details
+	 * @return
+	 */
+	public boolean createDetails(Details details) {
+
+		try {
+			QueryBuilder<Details, String> detailsBuilder = detailsDao
+					.queryBuilder();
+			detailsBuilder.where().eq("detailsId", details.getDetailsId())
+					.and().eq("statusId", details.getStatusId()).query();
+
+			if (detailsBuilder.query().isEmpty()) {
+				detailsDao.create(details);
+				EventBus.getDefault().post(new NewDetails(details));
+			}
+
+			return true;
+		} catch (SQLException se) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Can not create details ");
+			builder.append(details.toString());
+			builder.append(" to database :");
+			builder.append(se.getMessage());
+
+			Log.e(TAG, builder.toString(), se);
+
+			EventBus.getDefault().post(
+					new QueryFailure(this, se, builder.toString()));
+
+			return false;
+		}
+	}
+
+	/**
+	 * <p>
+	 * </p>
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public boolean createStatus(Status status) {
+		try {
+			String statusId = status.getStatusId();
+			if (statusDao.queryForEq("statusId", statusId).isEmpty()) {
+				statusDao.create(status);
+				EventBus.getDefault().post(new NewStatus(status));
+			}
+
+			return true;
+		} catch (SQLException se) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Can not create status ");
+			builder.append(status.toString());
+			builder.append(" to database :");
+			builder.append(se.getMessage());
+
+			Log.e(TAG, builder.toString(), se);
+
+			EventBus.getDefault().post(
+					new QueryFailure(this, se, builder.toString()));
+
+			return false;
+		}
+	}
+
 	/**
 	 * <p>
 	 * </p>
@@ -123,7 +191,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			EventBus.getDefault().post(
 					new QueryFailure(this, se, builder.toString()));
 		}
-		
+
 		return null;
 	}
 
