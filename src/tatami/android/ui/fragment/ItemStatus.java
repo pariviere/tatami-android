@@ -2,11 +2,11 @@ package tatami.android.ui.fragment;
 
 import tatami.android.Constants;
 import tatami.android.R;
-import tatami.android.content.UriBuilder;
-import tatami.android.ui.widget.StatusesAdapter;
-import tatami.android.ui.widget.StatusesAdapter.ViewHolder;
+import tatami.android.content.DbHelper;
+import tatami.android.model.Status;
+import tatami.android.ui.widget.StatusDisplayer;
+import tatami.android.ui.widget.StatusTextViewMapper;
 import android.app.Activity;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -26,7 +26,6 @@ public class ItemStatus extends Fragment {
 	TextView info;
 	TextView date;
 	TextView replyTo;
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,8 +35,8 @@ public class ItemStatus extends Fragment {
 		avatar = (ImageView) view.findViewById(R.id.avatar);
 		status = (TextView) view.findViewById(R.id.status);
 		info = (TextView) view.findViewById(R.id.info);
-		date = (TextView)view.findViewById(R.id.date);
-		replyTo = (TextView)view.findViewById(R.id.replyTo);
+		date = (TextView) view.findViewById(R.id.date);
+		replyTo = (TextView) view.findViewById(R.id.replyTo);
 
 		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_layout);
 
@@ -46,30 +45,25 @@ public class ItemStatus extends Fragment {
 
 		Log.d(TAG, "Selected status primary key is  " + id);
 
-		Cursor cursor = activity.getContentResolver().query(
-				UriBuilder.getStatusUri(id), null, null, null, null);
+		DbHelper helper = DbHelper.getDbHelpder(getActivity());
 
-		try {
-			// Only to mimic CursorAdapter behavior and
-			// to reuse StatusesAdapter code in this case
-			// where there's no ListView
-			StatusesAdapter adapter = new StatusesAdapter(this.getActivity(),
-					cursor);
+		Status statusObj = helper.getStatus(id);
 
-			View rowView = detailsLayout;
-			ViewHolder viewHolder = new ViewHolder();
-			viewHolder.avatar = avatar;
-			viewHolder.status = status;
-			viewHolder.info = info;
-			viewHolder.date = date;
-			viewHolder.replyTo = replyTo;
+		StatusDisplayer displayer = new StatusDisplayer();
 
-			rowView.setTag(viewHolder);
+		StatusDisplayer.ViewHolder viewHolder = new StatusDisplayer.ViewHolder();
+		viewHolder.avatar = avatar;
+		viewHolder.status = status;
+		viewHolder.info = info;
+		viewHolder.date = date;
+		viewHolder.replyTo = replyTo;
 
-			adapter.bindView(rowView, this.getActivity(), cursor);
-		} finally {
-			cursor.close();
-		}
+		StatusTextViewMapper.getInstance(getActivity()).decorate(
+				viewHolder.status, statusObj);
+		displayer.buildAvatarTextView(view, viewHolder.avatar, statusObj);
+		displayer.buildInfoTextView(viewHolder.info, statusObj);
+		displayer.buildDateTextView(viewHolder.date, statusObj);
+		displayer.buildReplyToTextView(viewHolder.replyTo, statusObj);
 
 		return view;
 	}

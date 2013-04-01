@@ -6,7 +6,7 @@ import tatami.android.content.TimelineLoader;
 import tatami.android.events.PersistTimelineDone;
 import tatami.android.ui.DetailsActivity;
 import tatami.android.ui.TimelineActivity;
-import tatami.android.ui.widget.StatusesAdapter;
+import tatami.android.ui.widget.StatusAdapter;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -33,10 +33,10 @@ public class StatusesList extends ListFragment implements
 		LoaderCallbacks<Cursor> {
 	private final static String TAG = StatusesList.class.getSimpleName();
 
-	private StatusesAdapter statusesAdapter = null;
+	private StatusAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
 
-	public StatusesAdapter getStatusesAdapter() {
+	public StatusAdapter getStatusesAdapter() {
 		return statusesAdapter;
 	}
 
@@ -98,7 +98,7 @@ public class StatusesList extends ListFragment implements
 		getLoaderManager()
 				.initLoader(StatusesList.class.hashCode(), null, this);
 
-		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
+		this.statusesAdapter = new StatusAdapter(getActivity(), null);
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
 
 		return view;

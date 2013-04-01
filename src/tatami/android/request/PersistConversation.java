@@ -60,9 +60,14 @@ public class PersistConversation implements
 			reverse.setStatusId(forStatusId);
 			helper.createDetails(reverse);
 
+			EventBus.getDefault().post(new PersistConversationDone());
+
+			
+			// BUT the whole status list is ALSO
+			// part of the current status conversation
+			// Really ugly way to handle this...
 			for (Status reserveStatus : listStatus) {
-				// BUT the whole status list is ALSO
-				// part of the current status conversation
+
 				if (reserveStatus != status) {
 					Details reverseDetails = new Details();
 					reverseDetails.setDetailsId(statusId);
@@ -73,6 +78,5 @@ public class PersistConversation implements
 			}
 		}
 
-		EventBus.getDefault().post(new PersistConversationDone());
 	}
 }

@@ -6,7 +6,7 @@ import tatami.android.content.ConversationLoader;
 import tatami.android.content.DbHelper;
 import tatami.android.events.PersistConversationDone;
 import tatami.android.model.Status;
-import tatami.android.ui.widget.StatusesAdapter;
+import tatami.android.ui.widget.StatusAdapter;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class ConversationDetails extends ListFragment implements
 		LoaderCallbacks<Cursor> {
 	private final static String TAG = ConversationDetails.class.getSimpleName();
 
-	private StatusesAdapter statusesAdapter = null;
+	private StatusAdapter statusesAdapter = null;
 	private PullToRefreshListView pullToRefreshListView = null;
 	private Status forStatus = null;
 
@@ -61,7 +61,7 @@ public class ConversationDetails extends ListFragment implements
 
 		this.pullToRefreshListView = (PullToRefreshListView) view
 				.findViewById(R.id.status_list_view);
-		this.statusesAdapter = new StatusesAdapter(getActivity(), null);
+		this.statusesAdapter = new StatusAdapter(getActivity(), null);
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
 
 		Activity activity = this.getActivity();

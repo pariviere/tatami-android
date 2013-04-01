@@ -3,16 +3,13 @@ package tatami.android.ui;
 import java.util.HashMap;
 
 import tatami.android.R;
-import tatami.android.content.UriBuilder;
-import tatami.android.events.RequestFailure;
+import tatami.android.content.DbHelper;
 import tatami.android.model.Status;
-import tatami.android.model.StatusFactory;
 import tatami.android.request.PersistTimeline;
 import tatami.android.request.PtrAwareTimelineListener;
 import tatami.android.request.TimelineRequest;
 import tatami.android.sync.SyncMeta;
-import tatami.android.ui.widget.StatusesAdapter;
-import android.database.Cursor;
+import tatami.android.ui.widget.StatusAdapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,9 +20,6 @@ import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.octo.android.robospice.persistence.DurationInMillis;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * <p>
@@ -45,7 +39,6 @@ public class TimelineActivity extends BaseFragmentActivity implements
 		this.setTitle(R.string.title_activity_timeline);
 		setContentView(R.layout.activity_timeline);
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,7 +62,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		TimelineRequest request = new TimelineRequest(this,
 				new HashMap<String, String>());
 		PersistTimeline listener = new PersistTimeline(this);
@@ -80,14 +73,6 @@ public class TimelineActivity extends BaseFragmentActivity implements
 
 	@Override
 	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-
-		HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) refreshView
-				.getRefreshableView().getAdapter();
-		StatusesAdapter statusesAdapter = (StatusesAdapter) headerViewListAdapter
-				.getWrappedAdapter();
-
-		long id = statusesAdapter.getItemId(0);
-
 		HashMap<String, String> extra = new HashMap<String, String>();
 
 		TimelineRequest request = new TimelineRequest(this, extra);
@@ -101,18 +86,17 @@ public class TimelineActivity extends BaseFragmentActivity implements
 	public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
 		HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) refreshView
 				.getRefreshableView().getAdapter();
-		StatusesAdapter statusesAdapter = (StatusesAdapter) headerViewListAdapter
+		StatusAdapter statusesAdapter = (StatusAdapter) headerViewListAdapter
 				.getWrappedAdapter();
 
 		long id = statusesAdapter.getItemId(statusesAdapter.getCount() - 1);
 
 		Log.d(TAG, "Last status primary key is  " + id);
 
-		Cursor cursor = getContentResolver().query(UriBuilder.getStatusUri(id),
-				null, null, null, null);
+		DbHelper helper = DbHelper.getDbHelpder(this);
+		Status status = helper.getStatus(id);
 
-		if (cursor.getCount() != 0) {
-			Status status = StatusFactory.fromCursorRow(cursor);
+		if (status != null) {
 			String statusId = status.getStatusId();
 
 			HashMap<String, String> extra = new HashMap<String, String>();

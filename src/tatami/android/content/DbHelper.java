@@ -34,18 +34,42 @@ import de.greenrobot.event.EventBus;
  */
 public class DbHelper extends OrmLiteSqliteOpenHelper {
 	private final static String TAG = DbHelper.class.getSimpleName();
+	public static final String DB_NAME = "tatami.db";
+	public static final int DB_VERSION = 2;
 
-	public static DbHelper getDbHelpder(Context context) {
-		DbHelper helper = OpenHelperManager.getHelper(context, DbHelper.class);
-		;
-		return helper;
+	private static DbHelper helper;
+
+	public static void initHelper(Context context) {
+		helper = OpenHelperManager.getHelper(context, DbHelper.class);
+
+		try {
+			// Do ask me why but this step 
+			// seems to be required.
+			// If not, the onCreate method is
+			// not call..
+			helper.getStatusDao();
+			helper.getDetailsDao();
+		} catch (SQLException se) {
+			Log.e(TAG, "Unable to create DAO objects");
+		}
 	}
 
+	public static void releaseHelper() {
+		OpenHelperManager.releaseHelper();
+		helper = null;
+	}
+
+	public static DbHelper getDbHelpder(Context context) {
+		return helper;
+	}
+	
+	
+	
 	private Dao<Status, String> statusDao;
 	private Dao<Details, String> detailsDao;
 
 	public DbHelper(Context context) {
-		super(context, DbMeta.DB_NAME, null, DbMeta.DB_VERSION);
+		super(context, DB_NAME, null, DB_VERSION);
 	}
 
 	@Override
@@ -57,12 +81,6 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			Log.e(TAG, "Unable to create database.", se);
 		}
 
-		try {
-			getStatusDao();
-			getDetailsDao();
-		} catch (SQLException se) {
-			Log.e(TAG, "Unable to create DAO objects");
-		}
 	}
 
 	public Dao<Status, String> getStatusDao() throws SQLException {
@@ -193,6 +211,32 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Status getMostRecentStatus() {
+		try {
+			QueryBuilder<Status, String> queryBuilder = statusDao
+					.queryBuilder();
+			queryBuilder.orderBy("statusDate", false);
+			queryBuilder.limit(1L);
+
+			return queryBuilder.queryForFirst();
+		} catch (SQLException se) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Unable to retrieve most recent status");
+			builder.append(" from database :");
+			builder.append(se.getMessage());
+
+			Log.e(TAG, builder.toString(), se);
+
+			EventBus.getDefault().post(
+					new QueryFailure(this, se, builder.toString()));
+			return null;
+		}
 	}
 
 	/**

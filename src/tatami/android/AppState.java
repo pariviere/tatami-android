@@ -2,6 +2,7 @@ package tatami.android;
 
 import java.util.Calendar;
 
+import tatami.android.content.DbHelper;
 import tatami.android.request.ConversationDetails;
 import tatami.android.request.ListStatus;
 import tatami.android.sync.TriggerSync;
@@ -35,6 +36,17 @@ public class AppState extends Application {
 	public void onCreate() {
 		super.onCreate();
 		doScheduleTask();
+
+		// ORMLite init
+		DbHelper.initHelper(this);
+	}
+
+	@Override
+	public void onTerminate() {
+		// Release ORMLite
+		DbHelper.releaseHelper();
+		
+		super.onTerminate();
 	}
 
 	/**
