@@ -1,5 +1,7 @@
 package tatami.android.ui.widget;
 
+import java.sql.Date;
+
 import tatami.android.R;
 import tatami.android.model.Status;
 import tatami.android.model.StatusFactory;
@@ -9,6 +11,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,9 +25,11 @@ import android.widget.TextView;
  * 
  * @author pariviere
  */
-public class StatusAdapter extends CursorAdapter {
+public class StatusAdapter extends CursorAdapter  {
 	private static String TAG = StatusAdapter.class.getSimpleName();
 	private StatusDisplayer displayer;
+	private int lastPosition = -1;
+	private Date lastAnimation;
 
 	public StatusAdapter(Context context, Cursor c) {
 		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -44,9 +49,9 @@ public class StatusAdapter extends CursorAdapter {
 		viewHolder.info = (TextView) rowView.findViewById(R.id.info);
 		viewHolder.date = (TextView) rowView.findViewById(R.id.date);
 		viewHolder.replyTo = (TextView) rowView.findViewById(R.id.replyTo);
+		viewHolder.replyToDrawable = (ImageView) rowView.findViewById(R.id.replyToDrawable);
 
 		rowView.setTag(viewHolder);
-
 		return rowView;
 	}
 
@@ -62,6 +67,28 @@ public class StatusAdapter extends CursorAdapter {
 		displayer.buildAvatarTextView(view, viewHolder.avatar, status);
 		displayer.buildInfoTextView(viewHolder.info, status);
 		displayer.buildDateTextView(viewHolder.date, status);
-		displayer.buildReplyToTextView(viewHolder.replyTo, status);
+		displayer.buildReplyToTextView(viewHolder.replyTo, viewHolder.replyToDrawable, status);
+		
+		animate(view, context, cursor);
 	}
+	
+	/**
+	 * 
+	 * @param view
+	 * @param context
+	 * @param cursor
+	 */
+	protected void animate(View view, Context context, Cursor cursor) {
+		
+		if (lastPosition <= cursor.getPosition()) {
+			lastPosition = cursor.getPosition();
+			
+			TranslateAnimation animation = new TranslateAnimation(0, 0, 200, 0 );
+			animation.setDuration(500);
+			animation.setFillBefore(true);
+						
+			view.startAnimation(animation);
+		}
+	}
+
 }

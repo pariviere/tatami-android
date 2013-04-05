@@ -49,17 +49,21 @@ public class StatusDisplayer {
 		public TextView info;
 		public TextView date;
 		public TextView replyTo;
+		public ImageView replyToDrawable;
 	}
 
-	public TextView buildReplyToTextView(TextView replyToView, Status status) {
+	public TextView buildReplyToTextView(TextView replyToView, ImageView replyToDrawable, Status status) {
 
 		String replyToUsername = status.getReplyToUsername();
 
 		if (StringUtils.isNotEmpty(replyToUsername)) {
-			replyToView.setText("in reply to @" + replyToUsername);
+			replyToView.setText("to @" + replyToUsername);
 			replyToView.setVisibility(View.VISIBLE);
+			replyToDrawable.setVisibility(View.VISIBLE);
+
 		} else {
 			replyToView.setVisibility(View.GONE);
+			replyToDrawable.setVisibility(View.GONE);
 		}
 		return replyToView;
 	}

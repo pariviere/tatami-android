@@ -17,6 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -92,6 +97,9 @@ public class StatusesList extends ListFragment implements
 
 		this.pullToRefreshListView.getRefreshableView().setItemsCanFocus(true);
 
+		this.pullToRefreshListView.getRefreshableView().setFastScrollEnabled(
+				true);
+
 		this.pullToRefreshListView
 				.setOnRefreshListener((TimelineActivity) getActivity());
 
@@ -101,6 +109,7 @@ public class StatusesList extends ListFragment implements
 		this.statusesAdapter = new StatusAdapter(getActivity(), null);
 		this.pullToRefreshListView.setAdapter(statusesAdapter);
 
+
 		return view;
 	}
 
@@ -109,14 +118,13 @@ public class StatusesList extends ListFragment implements
 		super.onStart();
 		EventBus.getDefault().register(this);
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		EventBus.getDefault().unregister(this);
 	}
-	
-	
+
 	public void onEventMainThread(PersistTimelineDone done) {
 		stopLoading();
 	}

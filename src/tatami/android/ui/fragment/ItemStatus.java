@@ -26,6 +26,7 @@ public class ItemStatus extends Fragment {
 	TextView info;
 	TextView date;
 	TextView replyTo;
+	ImageView replyToDrawable;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,8 +38,10 @@ public class ItemStatus extends Fragment {
 		info = (TextView) view.findViewById(R.id.info);
 		date = (TextView) view.findViewById(R.id.date);
 		replyTo = (TextView) view.findViewById(R.id.replyTo);
+		replyToDrawable = (ImageView) view.findViewById(R.id.replyToDrawable);
+		
 
-		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_layout);
+		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_heading);
 
 		Activity activity = this.getActivity();
 		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
@@ -57,13 +60,14 @@ public class ItemStatus extends Fragment {
 		viewHolder.info = info;
 		viewHolder.date = date;
 		viewHolder.replyTo = replyTo;
+		viewHolder.replyToDrawable = replyToDrawable;
 
 		StatusTextViewMapper.getInstance(getActivity()).decorate(
 				viewHolder.status, statusObj);
 		displayer.buildAvatarTextView(view, viewHolder.avatar, statusObj);
 		displayer.buildInfoTextView(viewHolder.info, statusObj);
 		displayer.buildDateTextView(viewHolder.date, statusObj);
-		displayer.buildReplyToTextView(viewHolder.replyTo, statusObj);
+		displayer.buildReplyToTextView(viewHolder.replyTo, viewHolder.replyToDrawable, statusObj);
 
 		return view;
 	}

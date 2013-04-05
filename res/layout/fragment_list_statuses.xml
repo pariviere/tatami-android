@@ -3,17 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+ 
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/status_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#D0D0D0"
         android:drawSelectorOnTop="false"
-        ptr:ptrMode="both" 
-        android:background="#EEE"
-        android:showDividers="none"
-     />
-    
+        android:divider="@null"
+        android:dividerPadding="0dp"
+        ptr:ptrMode="both" />
+
+    <TextView
+        android:id="@id/android:empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Nothing to display"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/secondary_text_dark"
+        android:textStyle="italic" />
 
 </RelativeLayout>

@@ -88,6 +88,7 @@ public class TimelineActivity extends BaseFragmentActivity implements
 				.getRefreshableView().getAdapter();
 		StatusAdapter statusesAdapter = (StatusAdapter) headerViewListAdapter
 				.getWrappedAdapter();
+		
 
 		long id = statusesAdapter.getItemId(statusesAdapter.getCount() - 1);
 

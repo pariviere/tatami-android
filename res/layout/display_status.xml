@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="#D0D0D0"
+    android:paddingBottom="4dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp" >
 
     <RelativeLayout
-        android:id="@+id/status_layout"
+        android:id="@+id/status_heading"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:background="#FFF" >
+        android:background="@drawable/status_heading_border"
+        android:paddingBottom="8dp" >
 
         <ImageView
             android:id="@+id/avatar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
             android:contentDescription="User avatar"
             android:src="@drawable/ic_mm" >
         </ImageView>
@@ -30,42 +29,66 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/avatar"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="2dp"
             android:layout_toRightOf="@+id/avatar"
-            android:text="@+id/info" />
+            android:text="John DOE @jdoe" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/info"
-            android:layout_alignParentRight="true"
-            android:text="@+id/date"
+            android:layout_alignLeft="@+id/info"
+            android:layout_below="@+id/info"
+            android:text="1 day ago"
             android:textSize="12sp"
             android:textStyle="italic" />
+    </RelativeLayout>
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/date"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_toRightOf="@+id/avatar"
-            android:textSize="16sp"
-            android:text="@+id/label" />
+    <LinearLayout
+        android:id="@+id/status_heading_separation"
+        android:layout_height="0.5dp"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/status_heading"
+        android:background="#D0D0D0" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/status_heading"
+        android:layout_below="@id/status_heading_separation"
+        android:background="@drawable/status_border"
+        android:padding="4dp"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n\nIn ac est vitae ipsum ultrices varius. Etiam eu arcu turpis. Nam mollis auctor sem, tincidunt"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:id="@+id/status_meta"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/status"
+        android:background="@drawable/status_meta_border"
+        android:padding="8dp" >
 
         <TextView
             android:id="@+id/replyTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/status"
             android:layout_below="@+id/status"
-            android:paddingTop="4dp"
-            android:text="@+id/replyTo"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/replyToDrawable"
+            android:text="to \@tmosby"
+            android:textColor="@android:color/secondary_text_light"
             android:textSize="12sp"
             android:textStyle="italic" />
+
+        <ImageView
+            android:id="@+id/replyToDrawable"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignLeft="@+id/status"
+            android:layout_below="@+id/status"
+            android:contentDescription="In Reply To"
+            android:src="@drawable/comment_reply" />
     </RelativeLayout>
 
 </RelativeLayout>

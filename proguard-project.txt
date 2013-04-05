@@ -21,3 +21,6 @@
 -keepclassmembers class ** {
     public void onEvent*(**);
 }
+
+-dontwarn org.htmlcleaner.JDomSerializer
+-dontwarn org.htmlcleaner.HtmlCleanerForAnt
