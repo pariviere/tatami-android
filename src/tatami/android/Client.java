@@ -1,11 +1,14 @@
 package tatami.android;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Date;
@@ -353,7 +356,12 @@ public class Client {
 			status.setStatusId(object.getString("statusId"));
 			status.setLastName(object.getString("lastName"));
 			status.setUsername(object.getString("username"));
-			status.setGravatar(object.getString("gravatar"));
+
+			String avatar = object.getString("avatar");
+
+			String gravatar = md5Hex(status.getUsername() + "@ippon.fr");
+
+			status.setGravatar(gravatar);
 			status.setFirstName(object.getString("firstName"));
 			status.setFavorite(object.getBoolean("favorite"));
 			status.setGroupId(object.getString("groupId"));
@@ -375,6 +383,25 @@ public class Client {
 		}
 
 		return listStatus;
+	}
+
+	public static String hex(byte[] array) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < array.length; ++i) {
+			sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(
+					1, 3));
+		}
+		return sb.toString();
+	}
+
+	public static String md5Hex(String message) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			return hex(md.digest(message.getBytes("CP1252")));
+		} catch (NoSuchAlgorithmException e) {
+		} catch (UnsupportedEncodingException e) {
+		}
+		return null;
 	}
 
 	/**

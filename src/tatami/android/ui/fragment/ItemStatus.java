@@ -5,7 +5,6 @@ import tatami.android.R;
 import tatami.android.content.DbHelper;
 import tatami.android.model.Status;
 import tatami.android.ui.widget.StatusDisplayer;
-import tatami.android.ui.widget.StatusTextViewMapper;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,12 +19,15 @@ import android.widget.TextView;
 public class ItemStatus extends Fragment {
 	private final static String TAG = ItemStatus.class.getSimpleName();
 
-	RelativeLayout detailsLayout;
+	RelativeLayout metaLayout;
+	RelativeLayout headingLayout;
 	ImageView avatar;
 	TextView status;
+	TextView userName;
+	TextView commonName;
+	TextView replyToUserName;
 	TextView info;
 	TextView date;
-	TextView replyTo;
 	ImageView replyToDrawable;
 
 	@Override
@@ -33,15 +35,15 @@ public class ItemStatus extends Fragment {
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.display_status, container, false);
 
-		avatar = (ImageView) view.findViewById(R.id.avatar);
+		avatar = (ImageView) view.findViewById(R.id.userAvatar);
 		status = (TextView) view.findViewById(R.id.status);
-		info = (TextView) view.findViewById(R.id.info);
-		date = (TextView) view.findViewById(R.id.date);
-		replyTo = (TextView) view.findViewById(R.id.replyTo);
+		commonName = (TextView) view.findViewById(R.id.userCommonName);
+		userName = (TextView) view.findViewById(R.id.userUsername);
+		date = (TextView) view.findViewById(R.id.statusDate);
+		replyToUserName = (TextView) view.findViewById(R.id.replyToUserName);
 		replyToDrawable = (ImageView) view.findViewById(R.id.replyToDrawable);
-		
-
-		detailsLayout = (RelativeLayout) view.findViewById(R.id.status_heading);
+		metaLayout = (RelativeLayout) view.findViewById(R.id.statusMetaLayout);
+		headingLayout = (RelativeLayout) view.findViewById(R.id.statusHeadingLayout);
 
 		Activity activity = this.getActivity();
 		long id = activity.getIntent().getLongExtra(Constants.STATUS_PARAM, 0);
@@ -59,11 +61,10 @@ public class ItemStatus extends Fragment {
 		viewHolder.status = status;
 		viewHolder.info = info;
 		viewHolder.date = date;
-		viewHolder.replyTo = replyTo;
 		viewHolder.replyToDrawable = replyToDrawable;
 
-		StatusTextViewMapper.getInstance(getActivity()).decorate(
-				viewHolder.status, statusObj);
+//		StatusTextViewMapper.getInstance(getActivity()).decorate(
+//				viewHolder.status, statusObj);
 		displayer.buildAvatarTextView(view, viewHolder.avatar, statusObj);
 		displayer.buildInfoTextView(viewHolder.info, statusObj);
 		displayer.buildDateTextView(viewHolder.date, statusObj);

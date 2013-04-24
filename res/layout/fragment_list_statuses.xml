@@ -9,7 +9,7 @@
         android:id="@+id/status_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#D0D0D0"
+        android:background="#e5e5e5"
         android:drawSelectorOnTop="false"
         android:divider="@null"
         android:dividerPadding="0dp"

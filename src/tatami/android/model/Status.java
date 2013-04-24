@@ -14,7 +14,7 @@ public class Status {
 
 	@DatabaseField
 	private String firstName;
-
+	
 	@DatabaseField
 	private String gravatar;
 

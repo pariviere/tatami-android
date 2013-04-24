@@ -47,8 +47,8 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			// seems to be required.
 			// If not, the onCreate method is
 			// not call..
-			helper.getStatusDao();
-			helper.getDetailsDao();
+			Dao<Status, String> statusDao = helper.getStatusDao();
+			Dao<Details, String> detailsDao = helper.getDetailsDao();
 		} catch (SQLException se) {
 			Log.e(TAG, "Unable to create DAO objects");
 		}
@@ -201,6 +201,35 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			StringBuilder builder = new StringBuilder();
 			builder.append("Unable to retrieve status ");
 			builder.append("with id=" + id);
+			builder.append(" from database :");
+			builder.append(se.getMessage());
+
+			Log.e(TAG, builder.toString(), se);
+
+			EventBus.getDefault().post(
+					new QueryFailure(this, se, builder.toString()));
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param statusId
+	 * @return
+	 */
+	public Status getStatus(String statusId) {
+		try {
+			List<Status> result = statusDao.queryForEq("statusId", statusId);
+
+			if (!result.isEmpty()) {
+				Status status = result.get(0);
+				return status;
+			}
+		} catch (SQLException se) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Unable to retrieve status ");
+			builder.append("with statusId=" + statusId);
 			builder.append(" from database :");
 			builder.append(se.getMessage());
 
