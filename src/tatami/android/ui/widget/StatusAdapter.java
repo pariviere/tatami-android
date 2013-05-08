@@ -1,6 +1,7 @@
 package tatami.android.ui.widget;
 
-import java.sql.Date;
+
+import java.util.Date;
 
 import tatami.android.R;
 import tatami.android.model.Status;
@@ -52,7 +53,7 @@ public class StatusAdapter extends CursorAdapter {
 				.getTag();
 		displayStatusViewHolder.bindView(status);
 
-		animate(view, context, cursor);
+//		animate(view, context, cursor);
 	}
 
 	/**
@@ -67,9 +68,14 @@ public class StatusAdapter extends CursorAdapter {
 			lastPosition = cursor.getPosition();
 
 			TranslateAnimation animation = new TranslateAnimation(0, 0, 200, 0);
-			animation.setDuration(500);
 			animation.setFillBefore(true);
-
+			animation.setDuration(200);
+			
+			if (lastAnimation != null) {
+				animation.setStartOffset(200);
+			}
+			lastAnimation = new Date();
+			
 			view.startAnimation(animation);
 		}
 	}
